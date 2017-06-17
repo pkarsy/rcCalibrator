@@ -10,10 +10,9 @@ the RC oscillator is not very well calibrated. At least for atmega328p can devia
 10% from the 8Mhz standard frequency(usually 0-3%). This is unacceptable for example for
 UART communications which tolerate up to ~2-3% error.
 The AVR microcontrollers have a register called OSCCAL (Oscillator Calibration) which can
-be used to drift the RC frequency and reduse the factory erron on the frequency.
+be used to drift the RC frequency and reduse the factory erron.
 
-### The purpose
-This project has the purpose:
+### The purposeof this project
 - to find the optimal OSCCAL value
 - to provide a mechanism via the "osccal" utility to automatically build bootloader and
 application code capable of fixing the RC frequency. The prinary purpose of this is to
@@ -22,28 +21,37 @@ allow UART communications
 ### UART complications
 As if the RC high error margin wasnt enough. The use of UART communications introduces
 additional error, because the 8MHz frequency is not divided exactly with the standard
-Serial bit(maybe baud?) rates
-see wormfood table(LINK)
+Serial bitrates. See [wormfood tables](http://wormfood.net/avrbaudcalc.php)
+
+**@8MHz**
 38400 +0.2%
-etc TODO
+57600 +2.1%   The proMinis are marginally capable of this speed
+115200 -3.5%  This is the reason ProMini@8Mhz cannot do 115.2K
+
+
+This line is also begins a separate paragraph, but...
+This line is only separated by a single newline, so it's a separate line in the same paragraph.
+
+### UART bootloader even more complications
+The use of a UART bootloader and at the same time using the internal RC
+oscillator, is a "chicken and egg" problem. Suppose we know that the optimal
+OSCCAL value for a spacific atmega chip is 139 : We write an arduino application
+and right after setup() we write
+OSCCAL=139;
+Seems good but it will not work (reliably) :
+The bootloader starts before the application. If the chip happens to be
+baddly factory calibrated, we will not be able to upload any code to the chip.
+The solution provided here is simple and I believe very robust. "osccal"
+utility finds the  correct OSCCAL value and then the (modified)ATmegaBOOT is compiled
+aginst this specific OSCCAL value. Then it is uploaded to the chip.
 
 ### Reasons to use an external crystal
-There are many reasons but some thinks come in mind
-When the question arises
+Generally whenever you need better accuracy than the
+When the question arises **"How to calibrate the internal avr oscillator"**
 
-**"How to calibrate the internal avr oscillator"**
+the usual answer is **"Use a crystal with 2 (22pF)caps and avoid all the trouble."**
 
-the usual answer is
-
-**"Use a crystal with 2 (22pF)caps and avoid all the trouble."**
-
-In many cases this is true. And if the module has a UART
-bootloader. like Optiboot(UNO) or ATmegaBOOT(proMini) the problem is even more complicated:
-Even if the application can
-calibrate the OSCCAL register, the bootloader doesn't know anything about
-it. Any upload will fail if the avr happens to deviate more than 2-3% from
-the 8Mhz. The arduino modules come whith a crystal/resonator and this is
-at least one of the reasons.
+In many cases this is true.
 
 ### Why use the internal oscillator
 

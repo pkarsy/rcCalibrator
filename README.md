@@ -12,7 +12,7 @@ UART communications which tolerate up to ~2-3% error.
 The AVR microcontrollers have a register called OSCCAL (Oscillator Calibration) which can
 be used to drift the RC frequency and reduse the factory erron.
 
-### The purposeof this project
+### The purpose of this project
 - to find the optimal OSCCAL value
 - to provide a mechanism via the "osccal" utility to automatically build bootloader and
 application code capable of fixing the RC frequency. The prinary purpose of this is to
@@ -21,16 +21,11 @@ allow UART communications
 ### UART complications
 As if the RC high error margin wasnt enough. The use of UART communications introduces
 additional error, because the 8MHz frequency is not divided exactly with the standard
-Serial bitrates. See [wormfood tables](http://wormfood.net/avrbaudcalc.php)
+Serial bitrates. See [wormfood tables](http://wormfood.net/avrbaudcalc.php) at 8Mhz
 
-**@8MHz**
-38400 +0.2%
-57600 +2.1%   The proMinis are marginally capable of this speed
+38400 +0.2%<br/>
+57600 +2.1%   The proMinis are marginally capable of this speed<br/>
 115200 -3.5%  This is the reason ProMini@8Mhz cannot do 115.2K
-
-
-This line is also begins a separate paragraph, but...
-This line is only separated by a single newline, so it's a separate line in the same paragraph.
 
 ### UART bootloader even more complications
 The use of a UART bootloader and at the same time using the internal RC
@@ -46,17 +41,17 @@ utility finds the  correct OSCCAL value and then the (modified)ATmegaBOOT is com
 aginst this specific OSCCAL value. Then it is uploaded to the chip.
 
 ### Reasons to use an external crystal
-Generally whenever you need better accuracy than the
-When the question arises **"How to calibrate the internal avr oscillator"**
-
-the usual answer is **"Use a crystal with 2 (22pF)caps and avoid all the trouble."**
-
-In many cases this is true.
+Generally whenever you need better accuracy than the RC iscillator can
+provide. Or when the trouble to calibrate the RC oscillator outweights
+the trouble to install the crystal.
+When the question arises in the AVR forums<br/>
+**"How to calibrate the internal avr oscillator"**<br/>
+the usual answer is<br/>
+**"Use a crystal with 2 (22pF)caps and avoid all the trouble."**<br/>
+In many cases this is true but there also valid reasons for the oposite
 
 ### Why use the internal oscillator
 
-However there are some (many in my opinion) cases, where the Internal RC
-oscillator should/must be used.
 - Fewer parts on the breadboard/PCB. Less clutter and more reliable. This
 is usually the first reason that comes in mind, but it is also the least importand.
 A crystal is usually a tiny part of the complexity and the cost of
@@ -71,19 +66,16 @@ useful Arduino functions like millis() work correctly only for 8Mhz and 16Mhz
 A high voltage programmer for example, needs a lot of GPIO pins and 2 more pins
 can make the difference.
 - A lot of projects don't need any accuracy of RC oscillator. If you upload your code
-using a UART bootloader however you need it.
+using a UART bootloader(arduino) however you need at least 2% accuracy.
 - **Much faster startup from sleep mode.** This is the reason this project exists.
-I have another project where the MCU is in sleep, and wakes up from an incoming
- SMS. Here is the message it receives when it uses a crystal
-
-**"*%&%^$^&%*&%&*%^*&^456 ...."**
-
+I have a project where the MCU is in sleep, it is connected to a GSM modem with
+hardware serial, and wakes up from an incoming
+ SMS. Here is the message it receives when it uses a crystal<br/>
+**"*%&%^$^&%*&%&*%^*&^456 ...."**<br/>
 The crystal needs a lot of time to stabilize it's freequency. As you can
 see were able to get only the last 3 digits of the incoming phone number.
-Here is the message when the (calibrated) RC oscillator is in use.
-
-**"CMT+ ...."**
-
+Here is the message when the (calibrated) RC oscillator is in use.<br/>
+**"CMT+ ...."**<br/>
 This time we did't lose a single character.
 
 ### How this project can be used

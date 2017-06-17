@@ -3,7 +3,32 @@
 # OsccalCalibrator
 Calibration of the internal RC oscillator of atmega328p chip, and OSCCAL aware UART bootloader(ATmegaBOOT).
 
-### Motive
+### The problem
+Most of the projects using AVR have a crystal or resontator connected to pins XTAL1 and XTAL2.
+Using FUSE settings the MCU can use its internal RC oscillator. The problem is however that
+the RC oscillator is not very well calibrated. At least for atmega328p can deviate up to
+10% from the 8Mhz standard frequency(usually 0-3%). This is unacceptable for example for
+UART communications which tolerate up to ~2-3% error.
+The AVR microcontrollers have a register called OSCCAL (Oscillator Calibration) which can
+be used to drift the RC frequency and reduse the factory erron on the frequency.
+
+### The purpose
+This project has the purpose:
+- to find the optimal OSCCAL value
+- to provide a mechanism via the "osccal" utility to automatically build bootloader and
+application code capable of fixing the RC frequency. The prinary purpose of this is to
+allow UART communications
+
+### UART complications
+As if the RC high error margin wasnt enough. The use of UART communications introduces
+additional error, because the 8MHz frequency is not divided exactly with the standard
+Serial bit(maybe baud?) rates
+see wormfood table(LINK)
+38400 +0.2%
+etc TODO
+
+### Reasons to use an external crystal
+There are many reasons but some thinks come in mind
 When the question arises
 
 **"How to calibrate the internal avr oscillator"**
@@ -16,23 +41,30 @@ In many cases this is true. And if the module has a UART
 bootloader. like Optiboot(UNO) or ATmegaBOOT(proMini) the problem is even more complicated:
 Even if the application can
 calibrate the OSCCAL register, the bootloader doesn't know anything about
-it and any upload will fail if the avr happens to deviate more than 2-3% from
+it. Any upload will fail if the avr happens to deviate more than 2-3% from
 the 8Mhz. The arduino modules come whith a crystal/resonator and this is
 at least one of the reasons.
 
+### Why use the internal oscillator
+
 However there are some (many in my opinion) cases, where the Internal RC
-oscillator can/should/must be used.
-- Fewer parts on the breadboard/PCB less clutter and more reliable. This
-is usually the first reason that comes in mind but it is also not importand.
+oscillator should/must be used.
+- Fewer parts on the breadboard/PCB. Less clutter and more reliable. This
+is usually the first reason that comes in mind, but it is also the least importand.
 A crystal is usually a tiny part of the complexity and the cost of
-a project. For home/breadboard projects is fine however if we can do without crystal.
+a project. For simple projects is fine however, if we can do without a crystal.
 - Ability to change the frequency at runtime. For example we can drift
 the 8Mhz frequency -2.1% for extremely reliable 57600 UART communication and
 drift it +3.5% for 115200. Of course we can calibrate the RC oscillator to
 the UART friendly 7.37(28) Mhz frequency. Note however that if you write
 Arduino code, better use 8Mhz (and 16Mhz if use a crystal) only. A lot of
 useful Arduino functions like millis() work correctly only for 8Mhz and 16Mhz
-- Much faster startup from sleep mode. This is the reason all this project began.
+- You have 2 additional GPIO pins. The XTAL1 and XTAL2 can be used for any purpose.
+A high voltage programmer for example, needs a lot of GPIO pins and 2 more pins
+can make the difference.
+- A lot of projects don't need any accuracy of RC oscillator. If you upload your code
+using a UART bootloader however you need it.
+- **Much faster startup from sleep mode.** This is the reason this project exists.
 I have another project where the MCU is in sleep, and wakes up from an incoming
  SMS. Here is the message it receives when it uses a crystal
 
@@ -46,8 +78,9 @@ Here is the message when the (calibrated) RC oscillator is in use.
 
 This time we did't lose a single character.
 
+### How this project can be used
 
-This project can be used with multiple strategies:
+There are multiple strategies:
 - To spot the "good" atmegas and use them on UART applications. This of
 course works only if you have a lot of atmegas and only some of them
 need to be calibrated. This method has the advandage that is simple and no

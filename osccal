@@ -1,0 +1,31 @@
+#!/usr/bin/python
+
+import os
+import subprocess
+import sys
+import time
+
+os.chdir(os.path.dirname( os.path.abspath(sys.argv[0]) ) )
+subprocess.call(["./calibrator/burncalibrator.sh"])
+
+time.sleep(3)
+
+p=subprocess.Popen(["avrdude", "-qq", "-c", "usbasp", "-p", "atmega328p",  "-U", "eeprom:r:-:h"],
+stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+
+out = p.communicate()[0]
+if out=='':
+    sys.stderr.write("No eeprom data\n")
+    sys.exit(1)
+
+o = [ int(x,16) for x in  out.split(",")[:4] ]
+
+if o[0]==5 and o[3]==5 and o[1]+o[2]==255:
+    #sys.stderr.write "Found OSCCAL"
+    print o[1]
+    #sys.exit(1)
+else:
+    sys.stderr.write("No OSCCAL found in eeprom\n")
+
+    sys.exit(1)
+    #print 0

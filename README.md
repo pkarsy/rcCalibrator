@@ -10,12 +10,12 @@ the RC oscillator is not very well calibrated. At least for atmega328p the frequ
 10% from the 8Mhz (usually 0-3%). This is unacceptable for example for
 UART communications which tolerate up to ~2-3% error.
 The AVR microcontrollers have a register called OSCCAL (Oscillator Calibration) which can
-be used to drift the RC frequency and reduse the factory erron.
+be used to drift the RC frequency and reduse the factory error.
 
 ### The purpose of this project
 There are a lot of pages to address the Calibration problem and atmel has released a lot of
 related papers. This project aims to offer an alterntive solution using any ISP programmer and a RTC module.
-- To find the optimal OSCCAL value, using any ISP prohrammer and a DS3231 rtc module. I assume USBasp in the instructions, but you can use usbTiny etc.
+- To find the optimal OSCCAL value, using any ISP prohrammer and a DS3231 rtc module. I assume USBasp in the instructions, but you can use USBtiny etc.
 - To provide information asosiated with the use of the insternal RC oscillator.
 - **More importantly** to provide a mechanism via the "osccal" utility to automatically build bootloader and
 application code capable of fixing the RC frequency. The prinary purpose of this is to
@@ -26,8 +26,8 @@ As if the RC clock speed error wasn't enough, the use of UART communications int
 additional error, because the 8MHz clock speed is not divided exactly with the standard
 Serial bitrates. See [wormfood tables](http://wormfood.net/avrbaudcalc.php) at 8Mhz
 
-38400 +0.2%<br/>
-57600 +2.1%   The proMinis are marginally capable of this speed<br/>
+38400 +0.2% This is an excellect choise when running at 8Mhz<br/>
+57600 +2.1%   The proMinis(3.3V 8Mhz) are capable of this Serial speed<br/>
 115200 -3.5%  This is the reason ProMini@8Mhz cannot do 115.2K
 
 ### UART bootloader: Even more problems
@@ -45,7 +45,8 @@ badly factory calibrated, we will not be able to upload any code to the chip.<br
 The solution provided here is simple and I believe very robust. "osccal"
 utility finds the  correct OSCCAL value and then the (modified)ATmegaBOOT is compiled
 against this specific OSCCAL value. Then it is uploaded to the chip. The first
-think the bootloader does, is to Fix the RC frequency.
+think the bootloader does, is to Fix the RC frequency. For another atmega chip
+the OSCCAL value will be different and so on.
 
 ### Reasons to use an external crystal
 - Generally whenever you need better accuracy than the RC iscillator can
@@ -75,10 +76,9 @@ the UART friendly 7.37(28) Mhz frequency. Note however that if you write
 Arduino code, better use 8Mhz. A lot of
 useful Arduino functions like millis() work correctly only for 8Mhz and 16Mhz
 - You have 2 additional GPIO pins. The XTAL1 and XTAL2 can be used for any purpose.
-A high voltage programmer for example, needs a lot of GPIO pins and 2 more pins
+A lot of projects need a lot of GPIO pins, and 2 more pins
 can make the difference.
-- A lot of projects don't need any accuracy of RC oscillator and they don't use a
-serial bootloader.
+- A lot of projects don't need any accuracy of RC oscillator.
 - **Much faster startup from sleep mode.** This is the reason this project exists.
 I have a project where the MCU is in sleep, it is connected to a GSM modem with
 hardware serial, and wakes up from an incoming
@@ -103,7 +103,7 @@ EEPROM byte 1: OSCCAL<br/>
 EEPROM byte 2: 255-OSCCAL<br/>
 EEPROM byte 3: 0x05
 
-If the lcd is installed, it also displays the values, which is extremely usefull if you need
+If the LCD is installed, it also displays the values, which is extremely usefull if you need
 to find some "good" atmega's
 After a few seconds "osccal" reads back the value from the EEPROM of the atmega and prints it
 to the console.

@@ -16,11 +16,11 @@ be used to drift the RC frequency and reduse the factory erron.
 - to find the optimal OSCCAL value
 - to provide a mechanism via the "osccal" utility to automatically build bootloader and
 application code capable of fixing the RC frequency. The prinary purpose of this is to
-allow UART communications. If the project needs better accuracy than 1% the internal RC
-oscillator cannot be used no matter how well it is calibrated.
+allow UART communications. If however the project needs better accuracy than ~1%, the internal RC
+oscillator cannot be used, no matter how well it is calibrated.
 
 ### UART complications
-As if the RC high error margin wasn't enough, the use of UART communications introduces
+As if the RC frequency error wasn't enough, the use of UART communications introduces
 additional error, because the 8MHz clock speed is not divided exactly with the standard
 Serial bitrates. See [wormfood tables](http://wormfood.net/avrbaudcalc.php) at 8Mhz
 
@@ -41,7 +41,7 @@ The bootloader starts before the application. If the chip happens to be
 badly factory calibrated, we will not be able to upload any code to the chip.
 The solution provided here is simple and I believe very robust. "osccal"
 utility finds the  correct OSCCAL value and then the (modified)ATmegaBOOT is compiled
-aginst this specific OSCCAL value. Then it is uploaded to the chip.
+against this specific OSCCAL value. Then it is uploaded to the chip.
 
 ### Reasons to use an external crystal
 Generally whenever you need better accuracy than the RC iscillator can
@@ -103,11 +103,12 @@ to the console.
 ### How this project can be used
 
 There are multiple strategies:
-- To spot the "good" atmegas and use them on UART applications. This of
+- To find some "good" atmegas and use them on UART applications. This of
 course works only if you have a lot of atmegas and only some of them
-need to be calibrated. This method has the advandage that is simple and no
+need to be calibrated. This method has the advandage that no
 modification of existing code is needed. If you need 57600 speed this
-method is unreliable however. See UART complications above.
+method is unreliable however. See UART complications above. In fact
+chips with about -1.5% to -2.5% error (No 0% !) work the best for 57600bps.
 - To be used with a custom bootloader who sets the OSCCAL register at
 startup. I have modified the ATmegaBOOT (used in
 Arduino proMini) to do exactly this. It sets the speed at about -2% (Reduces OSCCAL register by 4) of
@@ -146,7 +147,6 @@ a atmega328 chip do not go further.
 
 How it works. The following instructions are for the linux command line.
 I suppose they can be adapted for windows, but i didn't test it.
-When you download the github page<br/>
 ```sh
 > git clone https://github.com/pkarsy/OsccalCalibrator.git
 > cd OsccalCalibrator
@@ -154,8 +154,8 @@ When you download the github page<br/>
 ```
 Optionally put he "osccal" executable to the PATH.
 Connect the usbasp programmer (with the RTC) to a USB port
-attach a atmega chip (WARNING whatever it has in the FLASH, it will be erased, including the
-bootloader) and do a
+attach a atmega chip (WARNING whatever it has in the FLASH, it will be erased, including
+the bootloader) and do a
 ```sh
 > ./osccal
 ```
@@ -218,5 +218,5 @@ See "How "osccal" utility works" above
 It is possible that the application reads the EEPROM and uses the OSCCAL value provided.
 However I find the method quite fragile. A programming mistace can overwrite the contents
 of the EEPROM. The only good this method has is there is no need for recompilation for every
-atmega chip, but again the compilation is quite fast.
+atmega chip, but the compilation is quite fast.
 

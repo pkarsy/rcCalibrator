@@ -13,14 +13,16 @@ The AVR microcontrollers have a register called OSCCAL (Oscillator Calibration) 
 be used to drift the RC frequency and reduse the factory erron.
 
 ### The purpose of this project
-- to find the optimal OSCCAL value
-- to provide a mechanism via the "osccal" utility to automatically build bootloader and
+There are a lot of pages to address the Calibration problem and atmel has released a lot of
+related papers. This project aims to offer an alterntive solution using any ISP programmer and a RTC module.
+- To find the optimal OSCCAL value, using any ISP prohrammer and a DS3231 rtc module. I assume USBasp in the instructions, but you can use usbTiny etc.
+- To provide information asosiated with the use of the insternal RC oscillator.
+- **More importantly** to provide a mechanism via the "osccal" utility to automatically build bootloader and
 application code capable of fixing the RC frequency. The prinary purpose of this is to
-allow UART communications. If however the project needs better accuracy than ~1%, the internal RC
-oscillator cannot be used, no matter how well it is calibrated.
+allow UART communications.
 
-### UART complications
-As if the RC frequency error wasn't enough, the use of UART communications introduces
+### UART problems
+As if the RC clock speed error wasn't enough, the use of UART communications introduces
 additional error, because the 8MHz clock speed is not divided exactly with the standard
 Serial bitrates. See [wormfood tables](http://wormfood.net/avrbaudcalc.php) at 8Mhz
 
@@ -28,7 +30,7 @@ Serial bitrates. See [wormfood tables](http://wormfood.net/avrbaudcalc.php) at 8
 57600 +2.1%   The proMinis are marginally capable of this speed<br/>
 115200 -3.5%  This is the reason ProMini@8Mhz cannot do 115.2K
 
-### UART bootloader even more complications
+### UART bootloader: Even more problems
 The use of a UART bootloader and at the same time using the internal RC
 oscillator, is a "chicken and egg" problem. Suppose we know that the optimal
 OSCCAL value for a specific atmega chip is 139 : We write an arduino application
@@ -36,19 +38,22 @@ and right after setup() we write
 ```C++
 OSCCAL=139;
 ```
-Seems good **but** it will not work (reliably) :<br/>
+Seems good ?<br/>
+Unfortunatelly **it is not going to work** (reliably) :<br/>
 The bootloader starts before the application. If the chip happens to be
-badly factory calibrated, we will not be able to upload any code to the chip.
+badly factory calibrated, we will not be able to upload any code to the chip.<br/>
 The solution provided here is simple and I believe very robust. "osccal"
 utility finds the  correct OSCCAL value and then the (modified)ATmegaBOOT is compiled
-against this specific OSCCAL value. Then it is uploaded to the chip.
+against this specific OSCCAL value. Then it is uploaded to the chip. The first
+think the bootloader does, is to Fix the RC frequency.
 
 ### Reasons to use an external crystal
-Generally whenever you need better accuracy than the RC iscillator can
-provide.<br/>
-Or when the trouble to calibrate the RC oscillator outweights
+- Generally whenever you need better accuracy than the RC iscillator can
+provide. Anything more acurrate than 1% should be done with external crystal/resonator<br/>
+- When the trouble to calibrate the RC oscillator outweights
 the trouble to install the crystal.<br/>
-Or if you need the speed (up to 20Mhz).<br/>
+- If you need the speed (up to 20Mhz).<br/>
+
 When the question arises in the AVR forums :<br/>
 **"How to calibrate the internal avr oscillator"**<br/>
 the usual answer is<br/>
@@ -84,6 +89,9 @@ see we are able to get only the last 3 digits of the incoming phone number.
 Here is the message, when the (calibrated) RC oscillator is in use.<br/>
 **"+CMT: "+30691234567","pkar","17/06/18,00:10:41+12"**<br/>
 This time we did't lose a single character.
+- This one seems a little crazy but is totally valid. The internal oscillator
+has a lot of jitter, making it an exellent source for randomness. The Watchdog
+timer has its own RC oscillator TODO to be continued
 
 ### How "osccal" utility works
 When "osscal" utility runs, it installs the calibrator.hex file to the MCU. This code is
@@ -216,7 +224,8 @@ See the Makefile of the ATmegaBOOT bootloader, included in this site.
 ### Alternative method. Read the OSCCAL value from the EEPROM
 See "How "osccal" utility works" above
 It is possible that the application reads the EEPROM and uses the OSCCAL value provided.
-However I find the method quite fragile. A programming mistace can overwrite the contents
-of the EEPROM. The only good this method has is there is no need for recompilation for every
-atmega chip, but the compilation is quite fast.
+However I find the method quite fragile. A programming mistake can overwrite the contents
+of the EEPROM. The only good this method has, is there is no need to recompile the bootloader for every
+atmega chip. Given that the compilation is much faster than the upload, I don't find a reason to
+use this method.
 

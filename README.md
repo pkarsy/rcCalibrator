@@ -222,10 +222,10 @@ CALIBRATED_OSCAL_VALUE must be passed to the gcc by the Makefile.
 See the Makefile of the ATmegaBOOT bootloader, included in this site.
 
 ### Alternative method. Read the OSCCAL value from the EEPROM
-See "How "osccal" utility works" above
-It is possible that the application reads the EEPROM and uses the OSCCAL value provided.
+See [How "osccal" utility works](#how-osccal-utility-works) above.<br/>
+The application reads the EEPROM and uses the OSCCAL value provided.
 However I find the method quite fragile. A programming mistake can overwrite the contents
-of the EEPROM. The only good this method has, is there is no need to recompile the bootloader for every
-atmega chip. Given that the compilation is much faster than the upload, I don't find a reason to
+of the EEPROM. The only good this method has is : There is no need to recompile the bootloader for every
+atmega chip. The compilation is much faster than the upload however, so I don't find this a good reason to
 use this method.
 

@@ -16,7 +16,7 @@ The use of this utility will erase all the contents of your MCU without notice.
 Use it only if you are familiar with ISP programming and know how to set the chip to the old state.
 
 ### The problem
-Most of the projects using atmega328p, have a crystal or resonator connected to pins XTAL1 and XTAL2.
+Most of the projects using atmega328p (including arduino boards), have a crystal or resonator connected to pins XTAL1 and XTAL2.
 If you don't mind to run at 8Mhz, you can use FUSE settings to set the MCU to use its internal RC oscillator.
 The problem is however that
 the RC oscillator is sometimes not very well calibrated. At least for atmega328p the frequency can deviate up to

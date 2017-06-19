@@ -17,9 +17,9 @@ Use it only if you are familiar with ISP programming and know how to set the chi
 
 ### The problem
 Most of the projects using atmega328p (including arduino boards), have a crystal or resonator connected to pins XTAL1 and XTAL2.
-If you don't mind to run at 8Mhz, you can use FUSE settings to set the MCU to use its internal RC oscillator.
+If you don't mind to run at 8Mhz, you can use FUSE settings to set the MCU to use its internal RC oscillator.<br/>
 The problem is however that
-the RC oscillator is sometimes not very well calibrated.<br/>
+the RC oscillator is sometimes not very well calibrated.
 At least for atmega328p the frequency can deviate up to
 10% from the 8Mhz (usually 0-3% and to be fair, most of the time, very close to 0%). This is a problem for
 UART communications, which tolerate up to ~2-3% error.

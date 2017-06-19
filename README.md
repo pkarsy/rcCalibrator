@@ -9,7 +9,7 @@ Second Line: Optimal OSCCAL=157 Frequency=8.02Mhz Error:+0.2%
 # OsccalCalibrator
 Calibration of the internal RC oscillator of atmega328p chip, and OSCCAL aware UART bootloader(ATmegaBOOT).
 The hardware consists of a USBasp programmer and a DS3231 module, and of course the programmer can be
-used for its normal purpose to flash the chips.
+used for its normal purpose to flash the chips. The LCD is optional.
 
 ### WARNING
 The use of this utility will erase all the contents of your MCU without notice.

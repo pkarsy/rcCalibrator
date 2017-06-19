@@ -1,6 +1,10 @@
-16/6/2017. Allow some days to finish the github page before download.
 
-![OsccalCalibrator](OsccalCalibrator.jpg "Upper Line Default osccal")
+![OsccalCalibrator](OsccalCalibrator.jpg)
+
+```
+ First Line: Factory OSCCAL=159 Frequency=8.11Mhz Error:+1.4%
+Second Line: Optimal OSCCAL=157 Frequency=8.02Mhz Error:+0.2%
+```
 
 # OsccalCalibrator
 Calibration of the internal RC oscillator of atmega328p chip, and OSCCAL aware UART bootloader(ATmegaBOOT).
@@ -48,9 +52,9 @@ and right after setup() we write
 ```C++
 OSCCAL=139;
 ```
-Seems good ?<br/>
-**Unfortunatelly it is not working reliably :**<br/>
-The bootloader starts before the application and knows kothing about the magic 139 value. If the chip happens to be
+Looks good ?<br/>
+**Unfortunately it is not working reliably :**<br/>
+The bootloader starts before the application and knows nothing about the magic 139 value. If the chip happens to be
 badly factory calibrated, we will not be able to upload any code to the chip.<br/>
 The solution provided here is simple and very robust. "osccal"
 utility finds the  correct OSCCAL value and then the (modified)ATmegaBOOT is compiled
@@ -60,9 +64,9 @@ the OSCCAL value will be different, and so on.
 
 ### Reasons to use an external crystal
 - Generally whenever you need better accuracy than the RC oscillator can
-provide. Anything more acurrate than 1% should be done with external crystal/resonator<br/>
+provide. Anything more accurate than 1% should be done with external crystal/resonator<br/>
 - If you need the speed (up to 20Mhz).<br/>
-- When the trouble to calibrate the RC oscillator outweights
+- When the trouble to calibrate the RC oscillator outweighs
 the trouble to install the crystal.<br/>
 When the question arises in the AVR forums :<br/>
 **"How to calibrate the internal avr oscillator"**<br/>
@@ -92,20 +96,20 @@ can make the difference.
 I have a project where the MCU is in sleep, it is connected to a GSM modem with
 hardware serial, and wakes up from an incoming
  SMS. Here is the message it receives when it uses a crystal<br/>
-**"*%&%^$^&%*&%&*%^*&^456 ...."**<br/>
-The crystal needs a lot of time to stabilize it's freequency. As you can
+**"*%&%^$^&%*&%&*%^*&^567 ,"pkar","17/06/18,00:10:41+12"**<br/>
+The crystal needs a lot of time to stabilize it's frequency. As you can
 see we are able to get only the last 3 digits of the incoming phone number.
 Here is the message, when the (calibrated) RC oscillator is in use.<br/>
 **"+CMT: "+30691234567","pkar","17/06/18,00:10:41+12"**<br/>
 This time we did't lose a single character.
 - This one seems a little strange, but is totally valid. The internal oscillator
-has a lot of jitter, making it an exellent source of randomness. In conjunction with the Watchdog
-timer (which has its own RC oscillator) Can be used to generate random numbers much faster than the
-crystal-Watchdog combination. See https://github
+has a lot of jitter, making it an excellent source of randomness. In conjunction with the Watchdog
+timer (which has its own RC oscillator), can be used to generate random numbers much faster than the
+crystal-Watchdog combination.
 
 ### How "osccal" utility works
 When "osscal" utility runs, it installs the "calibrator.hex" file to the MCU. This code is
-an arduino sketch which calculates the optimal OSCCAL, using the DS3231 RTC module as clock reference, and
+an Arduino sketch which calculates the optimal OSCCAL, using the DS3231 RTC module as clock reference, and
 saves the OSCCAL value as:
 
 EEPROM byte 0: 0x05<br/>
@@ -115,15 +119,14 @@ EEPROM byte 3: 0x05
 
 After a few seconds "osccal" reads back the value from the EEPROM of the atmega and prints it
 to the console.<br/>
-If the LCD is installed, it also displays the values, which is extremely usefull if you need
-to find some "good" atmega's. Note that there are in fact a lot of "good" chips.<br/>
+If the LCD is installed, it also displays the values, but it is optional.
 
 ### How this project can be used
 
 There are multiple strategies:
 - To find some "good" atmegas and use them on UART applications. This of
 course works only if you have a lot of atmegas and only some of them
-need to be calibrated. This method has the advandage that no
+need to be calibrated. This method has the advantage that no
 modification of existing code is needed. If you need 57600 speed this
 method is unreliable however. See UART complications above. In fact
 chips with about -1.5% to -2.5% error (Not 0% !) work the best for 57600bps.
@@ -146,7 +149,7 @@ it to the voltage you are going to run the atmega328 after the calibration.
 Probably the voltage will be 3.3V as we talk about a 8Mhz system.
 - a ZIF developer board and
 - a DS3231 RTC module. You
-- also need some female-female dupont 2.54 cables, better to be sort.
+- also need some female-female Dupont 2.54 cables, better to be sort.
 - If you want visual feedback, you need also a 16x2 LCD and an i2c adapter, and to solder the secondary
 i2c header of the DS3231 module. The LCD modules
 come as 5V and 3.3V variants. Probably you need the 3.3V as mentioned above.
@@ -157,7 +160,7 @@ Developer Board | Rtc | LCD (if you use it) | Cable color
 -/GND  | GND | GND | Black
 PC4(Arduino A4)  |   SDA | SDA | Green
 PC5(Arduino A5)  |   SCL | SCL | Yellow
-A3   |   SQW |   - | Gray
+PC3(Arduino A3)  |   SQW |   - | Gray
 
 
 How it works. The following instructions are for the linux command line.

@@ -1,0 +1,7 @@
+*.[oa]
+*~
+build-*
+nimcache
+/rfboot.wiki
+/test
+old

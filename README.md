@@ -2,8 +2,8 @@
 ![OsccalCalibrator](OsccalCalibrator.jpg)
 
 ```
- First Line: Factory OSCCAL=159 Frequency=8.11Mhz Error:+1.4%
-Second Line: Optimal OSCCAL=157 Frequency=8.02Mhz Error:+0.2%
+ First Line: Factory OSCCAL=159 Frequency=8.11Mhz Error = +1.4%
+Second Line: Optimal OSCCAL=157 Frequency=8.02Mhz Error = +0.2%
 ```
 
 # OsccalCalibrator
@@ -53,8 +53,8 @@ and right after setup() we write
 ```C++
 OSCCAL=139;
 ```
-Looks good ?<br/>
-**Unfortunately it is not working reliably :**<br/>
+Seems good ?<br/>
+**Unfortunately it wont help**<br/>
 The bootloader starts before the application and knows nothing about the magic 139 value. If the chip happens to be
 badly factory calibrated, we will not be able to upload any code to the chip.<br/>
 The solution provided here is simple and very robust. "osccal"
@@ -72,8 +72,9 @@ the trouble to install the crystal.<br/>
 When the question arises in the AVR forums :<br/>
 **"How to calibrate the internal avr oscillator"**<br/>
 the usual answer is<br/>
-**"Use a crystal with 2 (22pF)caps and avoid all the trouble."**<br/>
-I believe this project reverses this. It is much easier, or at least this is my intention, to have a calibrated
+**"Use a crystal with 2 (22pF) caps and avoid all the trouble."**<br/>
+
+I believe using the "osccal" utility, it is much easier (or at least this is my intention) to have a calibrated
 atmega with a perfectly working bootloader, than to install the crystal. This is because the process is mostly automatic
 and consequently less error prone.
 
@@ -203,14 +204,14 @@ According to my tests the upload process is bulletproof.
 ### Modified AtmegaBOOT installation
 The process is quite automatic. Go to the folder where you downloaded OsccalCalibrator
 ```sh
-> cd atmegaBOOT
+> cd ATmegaBOOT
 # The Makefile uses "osccal" utility to find the optimal OSCCAL value
 > make isp
 ```
 wait a few seconds ... ready !
 
 It is important to note that the bootloader does NOT use any predefined
-EEPROM location to read the OSCCAL. This avoids the danger to accidentally erase
+EEPROM or FLASH location to read the OSCCAL. This avoids the danger to accidentally erase
 the EEPROM by the application (to store some data), with probably catastrophic results
 for the project. The bootloader is recompiled for every
 new chip and the OSCCAL value is saved in the bootloader
@@ -220,13 +221,12 @@ bootloader.
 ### rfboot
 I have written the bootloader [rfboot](https://github.com/pkarsy/rfboot) which can (optionally) set the optimal OSCCAL before
 jump to the application. The bootloader does not need any OSCCAL calibration to work (it uses SPI),
-but any UART device the project is using, might need it. As shown abobe, 38400bps is a very
-good choice for 8Mhz systems.
+but the project can be using some serial device.
 
 ### applications without bootloader
 You have to modify the Makefile of your project to use the "osscal" as a shell command and
-get the best OSCCAL value before burn the application code. Somewhere inside the application
-just after main() or setup() and before Serial.begin() setup put a
+get the OSCCAL value before write the application code. Somewhere inside the application
+just after main() or setup() and before Serial initialization, put a
 
 ```C++
 OSCCAL = CALIBRATED_OSCAL_VALUE;
@@ -236,10 +236,8 @@ CALIBRATED_OSCAL_VALUE must be passed to the gcc by the Makefile.
 See the Makefile of the ATmegaBOOT bootloader, included in this site.
 
 ### Alternative method. Read the OSCCAL value from the EEPROM
-See [How "osccal" utility works](README.md#how-osccal-utility-works) above.<br/>
+See [How "osccal" utility works](#how-osccal-utility-works) above.<br/>
 The application reads the EEPROM and uses the OSCCAL value provided.
 However I find the method quite fragile. A programming mistake can overwrite the contents
-of the EEPROM. The only good this method has is : There is no need to recompile the bootloader for every
-atmega chip. The compilation is much faster than the upload however, so I don't find this a good reason to
-use this method.
+of the EEPROM.
 

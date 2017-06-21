@@ -7,7 +7,7 @@ Second Line: Optimal OSCCAL=157 Frequency=8.02Mhz Error = +0.2%
 ```
 
 # OsccalCalibrator
-Calibration of the internal RC oscillator of atmega328p chip, and OSCCAL aware UART bootloader(ATmegaBOOT).
+Calibration of the internal RC oscillator of atmega328p chip, and OSCCAL aware Serial bootloader(ATmegaBOOT).
 The hardware consists of a USBasp programmer and a DS3231 module, and of course the programmer can be
 used for its normal purpose to flash the chips. The LCD is optional.
 
@@ -22,7 +22,7 @@ The problem is however that
 the RC oscillator is sometimes not very well calibrated.
 At least for atmega328p the frequency can deviate up to
 10% from the 8Mhz (usually 0-3% and to be fair, most of the time, very close to 0%). This is a problem for
-UART communications, which tolerate up to ~2-3% error.
+Serial communications, which tolerate up to ~2-3% error.
 The AVR microcontrollers have a register called OSCCAL (Oscillator Calibration) which can
 be used to drift the RC frequency and reduse the error to less than 1%.
 
@@ -34,8 +34,8 @@ related papers. This project aims to offer an alternative solution :
 application code capable of fixing the RC frequency. The prinary purpose of this is to
 allow UART(Serial) communications.
 
-### UART problems
-The use of UART communications introduces unfortunatelly
+### Serial communication problems
+The use of Serial communications introduces unfortunatelly
 another type of error, because the 8MHz clock speed is not divided exactly with the standard
 serial bitrates. See [wormfood tables](http://wormfood.net/avrbaudcalc.php) at 8Mhz
 
@@ -45,17 +45,20 @@ serial bitrates. See [wormfood tables](http://wormfood.net/avrbaudcalc.php) at 8
 115200  -3.5%   This is the reason ProMini@8Mhz cannot do 115.2k
 ```
 
-### UART bootloader: Even more problems
-The use of a UART bootloader and at the same time using the internal RC
+### Serial bootloader: Even more problems, and a solution.
+The use of a Serial/UART bootloader and at the same time using the internal RC
 oscillator, is a subtle problem. Suppose we know that the optimal
-OSCCAL value for a specific atmega chip is 139 : We write an arduino application
+OSCCAL value for a specific atmega chip is 139 : Let's we write an Arduino application,
 and right after setup() we write
+
 ```C++
 OSCCAL=139;
 ```
+
 Seems good ?<br/>
 **Unfortunately it wont help**<br/>
-The bootloader starts before the application and knows nothing about the magic 139 value. If the chip happens to be
+The bootloader starts before the application without knowing anything about the magic 139 value.
+If the chip happens to be
 badly factory calibrated, we will not be able to upload any code to the chip.<br/>
 The solution provided here is simple and very robust. "osccal"
 utility finds the  correct OSCCAL value and then the (modified)ATmegaBOOT is compiled
@@ -85,9 +88,9 @@ is usually the first reason that comes in mind, but it is also the least importa
 A crystal is usually a tiny part of the complexity and the cost of
 a project. For simple projects is fine however, if we can avoid the crystal.
 - Ability to change the frequency at runtime. For example we can drift
-the 8Mhz frequency -2.1% for extremely reliable 57600 UART communication and
+the 8Mhz frequency -2.1% for extremely reliable 57600 serial communication and
 drift it +3.5% for 115200. Of course we can calibrate the RC oscillator to
-the UART friendly 7.37(28) Mhz frequency. Note however that if you write
+the Serial friendly 7.37(28) Mhz frequency. Note however that if you write
 Arduino code, better use 8Mhz. A lot of
 useful Arduino functions like millis() work correctly only for 8Mhz and 16Mhz
 - You have 2 additional GPIO pins. The XTAL1 and XTAL2 can be used for any purpose.
@@ -105,7 +108,7 @@ Here is the message, when the (calibrated) RC oscillator is in use.<br/>
 **"+CMT: "+30691234567","pkar","17/06/18,00:10:41+12"**<br/>
 This time we did't lose a single character.
 - This one seems a little strange, but is totally valid. The internal oscillator
-has a lot of jitter, making it an excellent source of randomness. In conjunction with the Watchdog
+has a lot of [jitter](https://en.wikipedia.org/wiki/Jitter), making it an excellent source of randomness. In conjunction with the Watchdog
 timer (which has its own RC oscillator), can be used to generate random numbers much faster than the
 crystal-Watchdog combination.
 
@@ -126,17 +129,17 @@ If the LCD is installed, it also displays the values, but it is optional.
 ### How this project can be used
 
 There are multiple strategies:
-- To find some "good" atmegas and use them on UART applications. This of
+- To find some "good" atmegas and use them on serial applications. This of
 course works only if you have a lot of atmegas and only some of them
 need to be calibrated. This method has the advantage that no
 modification of existing code is needed. If you need 57600 speed this
-method is unreliable however. See UART complications above. In fact
+method is unreliable however. See "Serial communication problems" above. In fact
 chips with about -1.5% to -2.5% error (Not 0% !) work the best for 57600bps.
 - To be used with a custom bootloader who sets the OSCCAL register at
 startup. I have modified the ATmegaBOOT (used in
 Arduino proMini) to do exactly this. It sets the speed at about -2% (Reduces OSCCAL register by 4) of
 the optimal 8Mhz value, to make 57600 upload very reliable because it conpensates the +2.1% error
-(See UART complication above) , and just
+(See "Serial communication problems" above) , and just
 before the application code starts, sets the OSCCAL to the optimal
 value for 8Mhz frequency, Although it can easily support 115200bps
 by drifting the speed to +3.5% of the optimal, I
@@ -189,11 +192,11 @@ So from the perspective of the computer, "osccal" is a command witch
 If your intention is to just find some "good" MCUs then this is the end of
 the story.
 
-### Why to use the MCU with a modified UART bootloader.
+### Comparing ATmegaBoot(with OSCCAL support) with standard ATmegaBOOT/optiboot
 
 There are some pages around, that give instructions to use
-an uncalibrated atmega328p with a 38400 bootloader. This is VERY
-unreliable, as a lot of chips come from the factory with clock errors
+an uncalibrated atmega328p with a 38400 bootloader(usually optiboot or ATmegaBOOT). This is
+unreliable however, as a few chips come from the factory with clock errors
 far worse than 2%. It is also non standard and requires an Arduino custom board definition.
 The ATmegaBOOT Makefile included here, uses the "osccal" utility
 to find the correct OSCCAL value. It compiles
@@ -205,7 +208,9 @@ According to my tests the upload process is bulletproof.
 The process is quite automatic. Go to the folder where you downloaded OsccalCalibrator
 ```sh
 > cd ATmegaBOOT
-# The Makefile uses "osccal" utility to find the optimal OSCCAL value
+# The Makefile uses "osccal" utility to find the optimal OSCCAL value (using USBasp+RTC)
+# Compiles the bootloader
+# and uploads it (using the USBasp again)
 > make isp
 ```
 wait a few seconds ... ready !
@@ -221,7 +226,7 @@ bootloader.
 ### rfboot
 I have written the bootloader [rfboot](https://github.com/pkarsy/rfboot) which can (optionally) set the optimal OSCCAL before
 jump to the application. The bootloader does not need any OSCCAL calibration to work (it uses SPI),
-but the project can be using some serial device.
+but the application might need it.
 
 ### applications without bootloader
 You have to modify the Makefile of your project to use the "osscal" as a shell command and
@@ -233,7 +238,7 @@ OSCCAL = CALIBRATED_OSCAL_VALUE;
 ```
 
 CALIBRATED_OSCAL_VALUE must be passed to the gcc by the Makefile.
-See the Makefile of the ATmegaBOOT bootloader, included in this site.
+See the Makefile of the ATmegaBOOT bootloader, included here.
 
 ### Alternative method. Read the OSCCAL value from the EEPROM
 See [How "osccal" utility works](#how-osccal-utility-works) above.<br/>

@@ -59,7 +59,8 @@ Seems good ?<br/>
 **Unfortunately it wont help**<br/>
 The bootloader starts before the application without knowing anything about the magic 139 value.
 If the chip happens to be
-badly factory calibrated, we will not be able to upload any code to the chip.<br/>
+badly factory calibrated, we will not be able to upload any code to the chip.
+
 The solution provided here is simple and very robust. "osccal"
 utility finds the  correct OSCCAL value and then the (modified)ATmegaBOOT is compiled
 against this specific OSCCAL value. Then it is uploaded to the chip. The first
@@ -99,7 +100,7 @@ can make the difference.
 - A lot of projects don't need any accuracy of RC oscillator.
 - **Much faster startup from sleep mode.** This is the reason this project exists.
 I have a project where the MCU is in sleep, it is connected to a GSM modem with
-hardware serial, and wakes up from an incoming
+hardware serial(UART), and wakes up from an incoming
  SMS. Here is the message it receives when it uses a crystal<br/>
 **"*%&%^$^&%*&%&*%^*&^567 ,"pkar","17/06/18,00:10:41+12"**<br/>
 The crystal needs a lot of time to stabilize it's frequency. As you can
@@ -110,7 +111,7 @@ This time we did't lose a single character.
 - This one seems a little strange, but is totally valid. The internal oscillator
 has a lot of [jitter](https://en.wikipedia.org/wiki/Jitter), making it an excellent source of randomness. In conjunction with the Watchdog
 timer (which has its own RC oscillator), can be used to generate random numbers much faster than the
-crystal-Watchdog combination.
+Crystal-Watchdog combination.
 
 ### How "osccal" utility works
 When "osscal" utility runs, it installs the "calibrator.hex" file to the MCU. This code is
@@ -167,7 +168,6 @@ PC4(Arduino A4)  |   SDA | SDA | Green
 PC5(Arduino A5)  |   SCL | SCL | Yellow
 PC3(Arduino A3)  |   SQW |   - | Gray
 
-
 How it works. The following instructions are for the linux command line.
 I suppose they can be adapted for Windows, but i didn't test it.
 ```sh
@@ -197,12 +197,12 @@ the story.
 There are some pages around, that give instructions to use
 an uncalibrated atmega328p with a 38400 bootloader(usually optiboot or ATmegaBOOT). This is
 unreliable however, as a few chips come from the factory with clock errors
-far worse than 2%. It is also non standard and requires an Arduino custom board definition.
+far worse than 2%. It is also non standard and requires an Arduino custom board definition (as far as I know).<br/>
 The ATmegaBOOT Makefile included here, uses the "osccal" utility
 to find the correct OSCCAL value. It compiles
 the ATmegaBOOT against this value and then uploads the .hex file to the atmega328p chip. This chip
 can then be used just like a proMini to upload code with 57600bps.
-According to my tests the upload process is bulletproof.
+Indeed, according to my tests, the upload process is bulletproof.
 
 ### Modified AtmegaBOOT installation
 The process is quite automatic. Go to the folder where you downloaded OsccalCalibrator

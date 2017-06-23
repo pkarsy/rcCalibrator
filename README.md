@@ -1,15 +1,16 @@
 
-![OsccalCalibrator](OsccalCalibrator.jpg)
+![rcCalibrator](rcCalibrator.jpg)
 
 ```
  First Line: Factory OSCCAL=159 Frequency=8.11Mhz Error = +1.4%
 Second Line: Optimal OSCCAL=157 Frequency=8.02Mhz Error = +0.2%
 ```
 
-# OsccalCalibrator
+# rcCalibrator
 Calibration of the internal RC oscillator of atmega328p chip, and OSCCAL aware Serial bootloader(ATmegaBOOT).
 The hardware consists of a USBasp programmer and a DS3231 module, and of course the programmer can be
-used for its normal purpose to flash the chips. The LCD is optional.
+used for its normal purpose to flash the chips. The LCD is optional.To bypass the documentation go
+down to [installation](#software-installation)
 
 ### WARNING
 The use of this utility will erase all the contents of your MCU without notice.
@@ -82,9 +83,9 @@ I believe using the "osccal" utility, it is much easier (or at least this is my 
 atmega with a perfectly working bootloader, than to install the crystal. This is because the process is mostly automatic
 and consequently less error prone.
 
-### Why to use the internal oscillator
+### Reasons use the internal oscillator
 
-- Fewer parts on the breadboard/PCB. Less clutter and more reliable. This
+- Fewer parts on the breadboard/PCB. This
 is usually the first reason that comes in mind, but it is also the least importand.
 A crystal is usually a tiny part of the complexity and the cost of
 a project. For simple projects is fine however, if we can avoid the crystal.
@@ -148,7 +149,7 @@ wanted it to be interchangeable with ProMini 3.3V@8Mhz  so you don't need to
 define/use a custom board in the Arduino build system. "Standard is better than
 better"
 
-### Build Instructions
+### Build the hardware
 Although the photo at the start of the page says it all, here are some instructions:
 - You need a usbasp ISP programmer. I recommend to use a module with 3.3V/5V option and switch
 it to the voltage you are going to run the atmega328 after the calibration.
@@ -168,44 +169,37 @@ PC4(Arduino A4)  |   SDA | SDA | Green
 PC5(Arduino A5)  |   SCL | SCL | Yellow
 PC3(Arduino A3)  |   SQW |   - | Gray
 
-How it works. The following instructions are for the linux command line.
+
+### Software installation
+The following instructions are for the linux command line (debian, ubuntu, linux mint).
 I suppose they can be adapted for Windows, but i didn't test it.
+
 ```sh
 # The arduino development environment and the excellent Arduino-Makefile
 > sudo apt-get install arduino-core arduino-mk
 ...
-> git clone https://github.com/pkarsy/OsccalCalibrator.git
-> cd OsccalCalibrator
+> git clone https://github.com/pkarsy/rcCalibrator.git
+> cd rcCalibrator
 > chmod +x osccal
 ```
+
 Optionally put he "osccal" executable to the PATH.
-Connect the usbasp programmer (with the RTC) to a USB port
-attach a atmega chip (WARNING whatever it has in the FLASH, it will be erased, including
-the bootloader) and do a
+
+### Running the "osccal" utility standalone.
+Connect the usbasp programmer (with the RTC) to a USB port,
+attach a atmega chip, and run the executable :
 ```sh
 > ./osccal
 ```
 After a few seconds you will see the optimal osccal value in the command
-line. If you have the LCD you will also see the results there.
+line. If you have the LCD, you will also see the results there.
 So from the perspective of the computer, "osccal" is a command witch
- gives a number as a result (The best OSCCAL value = the closer to 8Mhz)
-If your intention is to just find some "good" MCUs then this is the end of
-the story.
+gives a number as a result (The best OSCCAL value = the closer to 8Mhz).
 
-### Comparing ATmegaBoot(with OSCCAL support) with standard ATmegaBOOT/optiboot
-
-There are some pages around, that give instructions to use
-an uncalibrated atmega328p with a 38400 bootloader(usually optiboot or ATmegaBOOT). This is
-unreliable however, as a few chips come from the factory with clock errors
-far worse than 2%. It is also non standard and requires an Arduino custom board definition (as far as I know).<br/>
-The ATmegaBOOT Makefile included here, uses the "osccal" utility
-to find the correct OSCCAL value. It compiles
-the ATmegaBOOT against this value and then uploads the .hex file to the atmega328p chip. This chip
-can then be used just like a proMini to upload code with 57600bps.
-Indeed, according to my tests, the upload process is bulletproof.
 
 ### Modified AtmegaBOOT installation
-The process is quite automatic. Go to the folder where you downloaded OsccalCalibrator
+The process is quite automatic. Go to the folder where you downloaded rcCalibrator
+
 ```sh
 > cd ATmegaBOOT
 # The Makefile uses "osccal" utility to find the optimal OSCCAL value (using USBasp+RTC)
@@ -213,6 +207,7 @@ The process is quite automatic. Go to the folder where you downloaded OsccalCali
 # and uploads it (using the USBasp again)
 > make isp
 ```
+
 wait a few seconds ... ready !
 
 It is important to note that the bootloader does NOT use any predefined
@@ -222,6 +217,17 @@ for the project. The bootloader is recompiled for every
 new chip and the OSCCAL value is saved in the bootloader
 area and is unique for this chip. This is the reason there is no precompiled HEX for this
 bootloader.
+
+### Comparing ATmegaBoot(with OSCCAL support) with standard ATmegaBOOT/optiboot
+There are some pages around, that give instructions to use
+an uncalibrated atmega328p with a 38400 bootloader(usually optiboot or ATmegaBOOT). This is
+unreliable however, as some chips come from the factory with clock errors
+far worse than 2%. It is also non standard and requires an Arduino custom board definition (as far as I know).<br/>
+The ATmegaBOOT Makefile included here, uses the "osccal" utility
+to find the correct OSCCAL value. It compiles
+the ATmegaBOOT against this value and then uploads the .hex file to the atmega328p chip. This chip
+can then be used just like a proMini to upload code with 57600bps.
+Indeed, according to my tests, the upload process is bulletproof.
 
 ### rfboot
 I have written the bootloader [rfboot](https://github.com/pkarsy/rfboot) which can (optionally) set the optimal OSCCAL before
@@ -240,7 +246,7 @@ OSCCAL = CALIBRATED_OSCAL_VALUE;
 CALIBRATED_OSCAL_VALUE must be passed to the gcc by the Makefile.
 See the Makefile of the ATmegaBOOT bootloader, included here.
 
-### Alternative method. Read the OSCCAL value from the EEPROM
+### Alternative method. Read the OSCCAL value from EEPROM
 See [How "osccal" utility works](#how-osccal-utility-works) above.<br/>
 The application reads the EEPROM and uses the OSCCAL value provided.
 However I find the method quite fragile. A programming mistake can overwrite the contents

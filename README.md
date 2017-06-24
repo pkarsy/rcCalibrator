@@ -49,15 +49,15 @@ serial bitrates. See [wormfood tables](http://wormfood.net/avrbaudcalc.php) at 8
 ### Serial bootloader: Even more problems, and a solution.
 The use of a Serial/UART bootloader and at the same time using the internal RC
 oscillator, is a subtle problem. Suppose we know that the optimal
-OSCCAL value for a specific atmega chip is 139 : Let's we write an Arduino application,
-and right after setup() we write
+OSCCAL value for a specific atmega chip is 139 : We develop an Arduino application,
+and right after setup() we have:
 
 ```C++
 OSCCAL=139;
 ```
 
 Seems good ?<br/>
-**Unfortunately it wont help**<br/>
+**Unfortunately it wont help.**<br/>
 The bootloader starts before the application without knowing anything about the magic 139 value.
 If the chip happens to be
 badly factory calibrated, we will not be able to upload any code to the chip.

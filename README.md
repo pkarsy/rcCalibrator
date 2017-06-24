@@ -227,7 +227,7 @@ The ATmegaBOOT Makefile included here, uses the "osccal" utility
 to find the correct OSCCAL value. It compiles
 the ATmegaBOOT against this value and then uploads the .hex file to the atmega328p chip. This chip
 can then be used just like a proMini to upload code with 57600bps.
-Indeed, according to my tests, the upload process is bulletproof.
+Indeed, according to my tests, the upload process is as reliable as with a crystal.
 
 ### rfboot
 I have written the bootloader [rfboot](https://github.com/pkarsy/rfboot) which can (optionally) set the optimal OSCCAL before

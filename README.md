@@ -74,16 +74,10 @@ provide. Anything more accurate than 1% should be done with external crystal/res
 - If you need the speed (up to 20Mhz).<br/>
 - When the trouble to calibrate the RC oscillator outweighs
 the trouble to install the crystal.<br/>
-When the question arises in the AVR forums :<br/>
-**"How to calibrate the internal avr oscillator"**<br/>
-the usual answer is<br/>
-**"Use a crystal with 2 (22pF) caps and avoid all the trouble."**<br/>
+I believe using the "osccal" utility, it is much easier (or at least, this is my intention) to have a calibrated
+atmega with a perfectly working bootloader, than to install the crystal. "make isp" is all it is needed.
 
-I believe using the "osccal" utility, it is much easier (or at least this is my intention) to have a calibrated
-atmega with a perfectly working bootloader, than to install the crystal. This is because the process is mostly automatic
-and consequently less error prone.
-
-### Reasons use the internal oscillator
+### Reasons to use the internal oscillator
 
 - Fewer parts on the breadboard/PCB. This
 is usually the first reason that comes in mind, but it is also the least importand.

@@ -47,7 +47,7 @@ serial bitrates. See [wormfood tables](http://wormfood.net/avrbaudcalc.php) at 8
 ```
 
 ### Serial bootloader: Even more problems, and a solution.
-The use of a Serial/UART bootloader and at the same time using the internal RC
+The use of a Serial/UART bootloader (a standard, not the one provided here) and at the same time using the internal RC
 oscillator, is a subtle problem. Suppose we know that the optimal
 OSCCAL value for a specific atmega chip is 139 : We develop an Arduino application,
 and right after setup() we have:

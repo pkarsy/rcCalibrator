@@ -5,7 +5,9 @@ import subprocess
 import sys
 import time
 
-os.chdir(os.path.dirname( os.path.abspath(sys.argv[0]) ) )
+projDir = os.path.dirname( os.path.realpath(sys.argv[0]) )
+#print projDir
+os.chdir( projDir )
 subprocess.call(["./calibrator/burncalibrator.sh"])
 
 time.sleep(3)

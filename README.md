@@ -32,13 +32,12 @@ There are a lot of pages to address the calibration problem, and atmel has relea
 related papers. This project aims to offer an alternative solution :
 - To find the optimal OSCCAL value, using an ISP programmer and a DS3231 rtc module.
 - **More importantly** to provide a mechanism via the "osccal" utility to automatically build bootloader and
-application code capable of fixing the RC frequency. The prinary purpose of this is to
-allow UART(Serial) communications.
+application code capable of fixing the RC frequency.
 
 ### Serial communication problems
-The use of Serial communications introduces unfortunatelly
-another type of error, because the 8MHz clock speed is not divided exactly with the standard
-serial bitrates. See [wormfood tables](http://wormfood.net/avrbaudcalc.php) at 8Mhz
+The use of Serial communications is a basic reason why we need a calibrated RC oscillator. Introduces
+another type of error though, because the 8MHz clock speed is not divided exactly with the standard
+serial bitrates. See [WormFood calculator](http://wormfood.net/avrbaudcalc.php) at 8Mhz
 
 ```
 38400   +0.2%   This is an excellent choise when running at 8Mhz
@@ -58,14 +57,15 @@ OSCCAL=139;
 
 Seems good ?<br/>
 **Unfortunately it wont help.**<br/>
-The bootloader starts before the application without knowing anything about the magic 139 value.
+The bootloader starts first, without knowing anything about the magic 139 value, and happily
+waits for code from the UART.
 If the chip happens to be
-badly factory calibrated, we will not be able to upload any code to the chip.
+badly factory calibrated, the serial communication will fail and we will not be able to upload any code to the chip.
 
 The solution provided here is simple and very robust. "osccal"
-utility finds the  correct OSCCAL value and then the (modified)ATmegaBOOT is compiled
+utility finds the  correct OSCCAL value, and then the (modified)ATmegaBOOT is compiled
 against this specific OSCCAL value. Then it is uploaded to the chip. The first
-think the bootloader does, is to Fix the RC frequency. For another atmega chip
+think the bootloader does, is to Fix the RC frequency, allowing serial communications. For another atmega chip
 the OSCCAL value will be different, and so on.
 
 ### Reasons to use an external crystal
@@ -143,7 +143,7 @@ wanted it to be interchangeable with ProMini 3.3V@8Mhz  so you don't need to
 define/use a custom board in the Arduino build system. "Standard is better than
 better"
 
-### Build the hardware
+### Assembling the hardware
 Although the photo at the start of the page says it all, here are some instructions:
 - You need a usbasp ISP programmer. I recommend to use a module with 3.3V/5V option and switch
 it to the voltage you are going to run the atmega328 after the calibration.
@@ -151,7 +151,7 @@ Probably the voltage will be 3.3V as we talk about a 8Mhz system.
 - a ZIF developer board and
 - a DS3231 RTC module. You
 - also need some female-female Dupont 2.54 cables, better to be sort.
-- If you want visual feedback, you need also a 16x2 LCD and an i2c adapter, and to solder the secondary
+- If you want visual feedback, you need also a 16x2 LCD and an LCD i2c adapter(search ebay), and to solder the secondary
 i2c header of the DS3231 module. The LCD modules
 come as 5V and 3.3V variants. Probably you need the 3.3V as mentioned above.
 
@@ -166,7 +166,7 @@ PC3(Arduino A3)  |   SQW |   - | Gray
 
 ### Software installation
 The following instructions are for the linux command line (debian, ubuntu, linux mint).
-I suppose they can be adapted for Windows, but i didn't test it.
+I suppose they can be adapted for Windows, but I didn't test it.
 
 ```sh
 # The arduino development environment and the excellent Arduino-Makefile

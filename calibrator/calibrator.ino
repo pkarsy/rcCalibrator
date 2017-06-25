@@ -21,7 +21,7 @@ bool LCD_IS_PRESENT = false;
 const byte SQW_PIN=A3;
 
 // RTC SQW pin is configured to generate 1024 ticks/sec
-// every busy loop is 64 ticks
+// every busy loop is 62.5 msec
 const uint32_t LOOPTIME = 1000000UL*64/1024; // == 62500 usec
 
 /* class _DS3231_ {
@@ -81,7 +81,7 @@ const uint32_t LOOPTIME = 1000000UL*64/1024; // == 62500 usec
 
 
 void printLine(uint8_t line, int osccal, int freq) {
-    char buf[25];
+    char buf[40];
     buf[16]=0;
     lcd.setCursor(0,line);
     int p = (freq-8000)/8;
@@ -89,8 +89,9 @@ void printLine(uint8_t line, int osccal, int freq) {
     if (p>0) sign='+';
     else if (p<0) sign='-';
     else sign=' ';
+    p = abs(p);
     freq=(freq+5)/10;
-    sprintf(buf,"%2d %d.%02dMh %c%d.%d%%", osccal, freq/100, freq%100, sign, p/10, abs(p)%10);
+    sprintf(buf,"%2d %d.%02dMh %c%d.%d%%", osccal, freq/100, freq%100, sign, p/10, p%10);
     lcd.write(buf);
 }
 

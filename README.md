@@ -95,14 +95,14 @@ can make the difference.
 - A lot of projects don't need any accuracy of RC oscillator.
 - **Much faster startup from sleep mode.** This is the reason this project exists.
 I have a project where the MCU is in sleep, it is connected to a GSM modem with
-hardware serial(UART), and wakes up from an incoming
- SMS. Here is the message it receives when it uses a crystal<br/>
-**"*%&%^$^&%*&%&*%^*&^567 ,"pkar","17/06/18,00:10:41+12"**<br/>
+hardware serial(UART), and wakes up from an incoming SMS.
+Here is the message we get, when the (calibrated) RC oscillator is in use.<br/>
+**"+CMT: "+30691234567","pkar","17/06/18,08:10:41+12"**<br/>
+Here is the message, if we use a crystal<br/>
+**S��������b���ɉ,"17/06/18,09:51:13+12**<br/>
 The crystal needs a lot of time to stabilize it's frequency. As you can
-see we are able to get only the last 3 digits of the incoming phone number.
-Here is the message, when the (calibrated) RC oscillator is in use.<br/>
-**"+CMT: "+30691234567","pkar","17/06/18,00:10:41+12"**<br/>
-This time we did't lose a single character.
+see the incoming phone number is lost. Sometimes even the date and time.
+
 - This one seems a little strange, but is totally valid. The internal oscillator
 has a lot of [jitter](https://en.wikipedia.org/wiki/Jitter), making it an excellent source of randomness. In conjunction with the Watchdog
 timer (which has its own RC oscillator), can be used to generate random numbers much faster than the

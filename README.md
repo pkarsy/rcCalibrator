@@ -109,18 +109,16 @@ timer (which has its own RC oscillator), can be used to generate random numbers 
 Crystal-Watchdog combination.
 
 ### How "osccal" utility works
-When "osscal" utility runs, it installs the "calibrator.hex" file to the MCU. This code is
-an Arduino sketch which calculates the optimal OSCCAL, using the DS3231 RTC module as clock reference, and
-saves the OSCCAL value as:
+When "osscal" utility runs, it installs the "calibrator.hex" file to the MCU. This code calculates the optimal OSCCAL, using the DS3231 RTC module as clock reference. If the LCD is installed, it displays the values to the tiny screen. Finally and most
+importantly it saves the OSCCAL value as:
 
-EEPROM byte 0: 0x05<br/>
+**EEPROM byte 0: 0x05<br/>
 EEPROM byte 1: OSCCAL<br/>
 EEPROM byte 2: 255-OSCCAL<br/>
-EEPROM byte 3: 0x05
+EEPROM byte 3: 0x05**
 
 After a few seconds "osccal" reads back the value from the EEPROM of the atmega and prints it
-to the console.<br/>
-If the LCD is installed, it also displays the values, but it is optional.
+to the console.
 
 ### How this project can be used
 

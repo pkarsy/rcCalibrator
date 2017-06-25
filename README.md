@@ -16,6 +16,9 @@ down to [installation](#software-installation)
 The use of this utility will erase all the contents of your MCU without notice.
 Use it only if you are familiar with ISP programming and know how to set the chip to the old state.
 
+### WARNING 2
+57600 and even more 115200 is somewhat problematic. See the section "57600bps"
+
 ### The problem
 Most of the projects using atmega328p (including arduino boards), have a crystal or resonator connected to pins XTAL1 and XTAL2.
 If you don't mind to run at 8Mhz, you can use FUSE settings to set the MCU to use its internal RC oscillator.<br/>
@@ -67,6 +70,14 @@ utility finds the  correct OSCCAL value, and then the (modified)ATmegaBOOT is co
 against this specific OSCCAL value. Then it is uploaded to the chip. The first
 think the bootloader does, is to Fix the RC frequency, allowing serial communications. For another atmega chip
 the OSCCAL value will be different, and so on.
+
+### 57600bps
+57600bps introduces +2.1% error. Suppose we have calibrated the RC oscillator and the error is
++0.3%. Then the total error becomes +2.4% which is big. I suggest if you really need to use
+57600bps in your appplication to use an OSCCAL = OPTIMAL_OSCCAL - 4 to compensate the error.
+The patched ATmegaBOOT provided, does exactly this, but before jump to the application it sets
+the OSCCAL to the optimal value, because it does not know which speed the application uses.
+In that case a "OSCCAL-=4;" does the job
 
 ### Reasons to use an external crystal
 - Generally whenever you need better accuracy than the RC oscillator can

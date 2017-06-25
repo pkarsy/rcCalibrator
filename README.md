@@ -170,12 +170,20 @@ I suppose they can be adapted for Windows, but I didn't test it.
 # The arduino development environment and the excellent Arduino-Makefile
 > sudo apt-get install arduino-core arduino-mk
 ...
+> cd ~/Projects  # Change with the directory you will put the rcCalibrator
 > git clone https://github.com/pkarsy/rcCalibrator.git
 > cd rcCalibrator
 > chmod +x osccal
 ```
 
-Optionally put he "osccal" executable to the PATH.
+Optionally put he "osccal" executable to the PATH. In most desktop oriented distributions
+a symlink is enough:
+```sh
+# if the ~/bin does not exist "mkdir ~/bin" and then logout and login again
+> cd ~/bin
+# Do NOT copy osccal, just symlink it
+> ln -s ~/Projects/rcCalibrator/osccal
+```
 
 ### Running the "osccal" utility standalone.
 Connect the usbasp programmer (with the RTC) to a USB port,

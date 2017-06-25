@@ -117,7 +117,7 @@ EEPROM byte 1: OSCCAL<br/>
 EEPROM byte 2: 255-OSCCAL<br/>
 EEPROM byte 3: 0x05**
 
-After a few seconds "osccal" reads back the value from the EEPROM of the atmega and prints it
+After a few seconds "osccal" reads back the value from the EEPROM, and prints it
 to the console.
 
 ### How this project can be used

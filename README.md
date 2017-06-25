@@ -120,26 +120,6 @@ EEPROM byte 3: 0x05**
 After a few seconds "osccal" reads back the value from the EEPROM, and prints it
 to the console.
 
-### How this project can be used
-
-There are multiple strategies:
-- To find some "good" atmegas and use them on serial applications. This of
-course works only if you have a lot of atmegas and only some of them
-need to be calibrated. This method has the advantage that no
-modification of existing code is needed. If you need 57600 speed this
-method is unreliable however. See "Serial communication problems" above. In fact
-chips with about -1.5% to -2.5% error (Not 0% !) work the best for 57600bps.
-- To be used with a custom bootloader who sets the OSCCAL register at
-startup. I have modified the ATmegaBOOT (used in
-Arduino proMini) to do exactly this. It sets the speed at about -2% (Reduces OSCCAL register by 4) of
-the optimal 8Mhz value, to make 57600 upload very reliable because it conpensates the +2.1% error
-(See "Serial communication problems" above) , and just
-before the application code starts, sets the OSCCAL to the optimal
-value for 8Mhz frequency, Although it can easily support 115200bps
-by drifting the speed to +3.5% of the optimal, I
-wanted it to be interchangeable with ProMini 3.3V@8Mhz  so you don't need to
-define/use a custom board in the Arduino build system. "Standard is better than
-better"
 
 ### Assembling the hardware
 Although the photo at the start of the page says it all, here are some instructions:
@@ -185,6 +165,27 @@ a symlink is enough:
 > ln -s ~/Projects/rcCalibrator/osccal
 ```
 
+### How this project can be used
+
+There are multiple strategies:
+- To find some "good" atmegas and use them on serial applications. This of
+course works only if you have a lot of atmegas and only some of them
+need to be calibrated. This method has the advantage that no
+modification of existing code is needed. If you need 57600 speed this
+method is unreliable however. See "Serial communication problems" above. In fact
+chips with about -1.5% to -2.5% error (Not 0% !) work the best for 57600bps.
+- To be used with a custom bootloader who sets the OSCCAL register at
+startup. I have modified the ATmegaBOOT (used in
+Arduino proMini) to do exactly this. It sets the speed at about -2% (Reduces OSCCAL register by 4) of
+the optimal 8Mhz value, to make 57600 upload very reliable because it conpensates the +2.1% error
+(See "Serial communication problems" above) , and just
+before the application code starts, sets the OSCCAL to the optimal
+value for 8Mhz frequency, Although it can easily support 115200bps
+by drifting the speed to +3.5% of the optimal, I
+wanted it to be interchangeable with ProMini 3.3V@8Mhz  so you don't need to
+define/use a custom board in the Arduino build system. "Standard is better than
+better"
+
 ### Running the "osccal" utility standalone.
 Connect the usbasp programmer (with the RTC) to a USB port,
 attach a atmega chip, and run the executable :
@@ -195,7 +196,6 @@ After a few seconds you will see the optimal osccal value in the command
 line. If you have the LCD, you will also see the results there.
 So from the perspective of the computer, "osccal" is a command witch
 gives a number as a result (The best OSCCAL value = the closer to 8Mhz).
-
 
 ### Modified AtmegaBOOT installation
 The process is quite automatic. Go to the folder where you downloaded rcCalibrator

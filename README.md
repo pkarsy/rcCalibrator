@@ -99,7 +99,7 @@ hardware serial(UART), and wakes up from an incoming SMS.
 Here is the message we get, when the (calibrated) RC oscillator is in use.<br/>
 **"+CMT: "+30691234567","pkar","17/06/18,08:10:41+12"**<br/>
 Here is the message, if we use a crystal<br/>
-**S��������b���ɉ,"17/06/18,09:51:13+12**<br/>
+**S��������b���ɉ,"17/06/18,09:51:13+12"**<br/>
 The crystal needs a lot of time to stabilize it's frequency. As you can
 see the incoming phone number is lost. Sometimes even the date and time.
 

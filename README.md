@@ -102,7 +102,8 @@ Arduino code, better use 8Mhz. A lot of
 useful Arduino functions like millis() work correctly only for 8Mhz and 16Mhz
 - You have 2 additional GPIO pins. The XTAL1 and XTAL2 can be used for any purpose.
 A lot of projects need a lot of GPIO pins, and 2 more pins
-can make the difference.
+can make the difference. I include a very simple "library" to control these pins
+[xtalio.h](xtalio.h)
 - A lot of projects don't need any accuracy of RC oscillator.
 - **Much faster startup from sleep mode.** This is the reason this project exists.
 I have a project where the MCU is in sleep, it is connected to a GSM modem with
@@ -201,7 +202,7 @@ better"
 Connect the usbasp programmer (with the RTC) to a USB port,
 attach a atmega chip, and run the executable :
 ```sh
-# use the full path name ie "~/Projects/rcCalibrator/osccal" if 
+# use the full path name ie "~/Projects/rcCalibrator/osccal" if
 # the executable is not in the PATH
 > osccal
 ```

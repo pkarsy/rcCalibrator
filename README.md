@@ -38,8 +38,8 @@ related papers. This project aims to offer an alternative solution :
 application code capable of fixing the RC frequency.
 
 ### Serial communication problems
-The use of Serial communications is a basic reason why we need a calibrated RC oscillator. Introduces
-another type of error though, because the 8MHz clock speed is not divided exactly with the standard
+The use of serial communications is a basic reason why we need a calibrated RC oscillator. Introduces
+another type of error however, as the 8MHz clock speed is not divided exactly with the standard
 serial bitrates. See [WormFood calculator](http://wormfood.net/avrbaudcalc.php) at 8Mhz
 
 ```
@@ -49,7 +49,7 @@ serial bitrates. See [WormFood calculator](http://wormfood.net/avrbaudcalc.php) 
 ```
 
 ### Serial bootloader: Even more problems, and a solution.
-The use of a Serial/UART bootloader (a standard, not the one provided here) and at the same time using the internal RC
+The use of a serial/UART bootloader (a standard, not the one provided here) and at the same time using the internal RC
 oscillator, is a subtle problem. Suppose we know that the optimal
 OSCCAL value for a specific atmega chip is 139 : We develop an Arduino application,
 and right after setup() we have:
@@ -62,8 +62,8 @@ Seems good ?<br/>
 **Unfortunately it wont help.**<br/>
 The bootloader starts first, without knowing anything about the magic 139 value, and happily
 waits for code from the UART.
-If the chip happens to be
-badly factory calibrated, the serial communication will fail and we will not be able to upload any code to the chip.
+If the chip happens to be badly factory calibrated, the serial communication will fail
+and we will not be able to upload any code to the chip.
 
 The solution provided here is simple and very robust. "osccal"
 utility finds the  correct OSCCAL value, and then the (modified)ATmegaBOOT is compiled
@@ -73,11 +73,11 @@ the OSCCAL value will be different, and so on.
 
 ### 57600bps
 57600bps introduces +2.1% error. Suppose we have calibrated the RC oscillator and the error is
-+0.3%. Then the total error becomes +2.4% which is big. I suggest if you really need to use
-57600bps in your appplication to use an OSCCAL = OPTIMAL_OSCCAL - 4 to compensate the error.
-The patched ATmegaBOOT provided, does exactly this, but before jump to the application it sets
++0.3%. Then the total error becomes +2.4% which is marginal. I suggest if you really need to use
+57600bps in your appplication, to use an OSCCAL = OPTIMAL_OSCCAL - 4 to compensate the error.
+The modified ATmegaBOOT provided, does exactly this, but before jump to the application it sets
 the OSCCAL to the optimal value, because it does not know which speed the application uses.
-In that case a "OSCCAL-=4;" does the job
+In that case a "OSCCAL-=4;" in setup() does the job.
 
 ### Reasons to use an external crystal
 - Generally whenever you need better accuracy than the RC oscillator can
@@ -86,7 +86,7 @@ provide. Anything more accurate than 1% should be done with external crystal/res
 - When the trouble to calibrate the RC oscillator outweighs
 the trouble to install the crystal.<br/>
 I believe using the "osccal" utility, it is much easier (or at least, this is my intention) to have a calibrated
-atmega with a perfectly working bootloader, than to install the crystal. "make isp" is all it is needed.
+atmega with a perfectly working bootloader, than to install the crystal. "make isp" is all that is needed.
 
 ### Reasons to use the internal oscillator
 

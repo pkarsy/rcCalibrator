@@ -201,7 +201,9 @@ better"
 Connect the usbasp programmer (with the RTC) to a USB port,
 attach a atmega chip, and run the executable :
 ```sh
-> ./osccal
+# use the full path name ie "~/Projects/rcCalibrator/osccal" if 
+# the executable is not in the PATH
+> osccal
 ```
 After a few seconds you will see the optimal osccal value in the command
 line. If you have the LCD, you will also see the results there.
@@ -229,9 +231,9 @@ new chip and the OSCCAL value is saved in the bootloader
 area and is unique for this chip. This is the reason there is no precompiled HEX for this
 bootloader.
 
-### Comparing ATmegaBoot(with OSCCAL support) with standard ATmegaBOOT/optiboot
+### Comparing ATmegaBoot(with OSCCAL support) with the stock ATmegaBOOT/optiboot
 There are some pages around, that give instructions to use
-an uncalibrated atmega328p with a 38400 bootloader(usually optiboot or ATmegaBOOT). This is
+an uncalibrated atmega328p with a 38400 bootloader(usually the stock optiboot or ATmegaBOOT). This is
 unreliable however, as some chips come from the factory with clock errors
 far worse than 2%. It is also non standard and requires an Arduino custom board definition (as far as I know).<br/>
 The ATmegaBOOT Makefile included here, uses the "osccal" utility
@@ -241,8 +243,8 @@ can then be used just like a proMini to upload code with 57600bps.
 Indeed, according to my tests, the upload process is as reliable as with a crystal.
 
 ### rfboot
-I have written the bootloader [rfboot](https://github.com/pkarsy/rfboot) which can (optionally) set the optimal OSCCAL before
-jump to the application. The bootloader does not need any OSCCAL calibration to work (it uses SPI),
+I have written the bootloader [rfboot](https://github.com/pkarsy/rfboot) which can (optionally) set the optimal OSCCAL value, before
+jump to the application. The bootloader itself does not need any OSCCAL calibration to work (it uses SPI),
 but the application might need it.
 
 ### applications without bootloader

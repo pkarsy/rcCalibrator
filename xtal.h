@@ -2,7 +2,7 @@
 // They work only if the MCU has the fuses set
 // for internal RC oscillator
 // put the file in the same folder as the sketch
-// and #include "xtalio.h"
+// and #include "xtal.h"
 #define XTAL1_OUTPUT  DDRB  |= _BV(6)
 #define XTAL1_INPUT   DDRB  &= ~_BV(6)
 #define XTAL1_HIGH    PORTB |= _BV(6)

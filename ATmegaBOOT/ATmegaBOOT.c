@@ -267,14 +267,16 @@ uint8_t bootuart = 0;
 
 uint8_t error_count = 0;
 
-// ATmegaBOOT_OSCCAL
+// This is the original function app_start used by ATmegaBOOT
+
 void (*app_start_orig)(void) = 0x0000;
 
-//#define CALCULATED_OSCCAL_VALUE 139
-
 void app_start() {
+    // Modified for rcCalibrator project
+    // In a moment we are going to jump to the application and we are not aware what
+    // serial speed the application uses. We set the speed as close to 8Mhz as possible.
     OSCCAL=CALCULATED_OSCCAL_VALUE;
-    //OSCCAL=160;
+    // better to use asm(jmp 0)
     app_start_orig();
 }
 

@@ -24,22 +24,23 @@ Most of the projects using atmega328p (including arduino boards), have a crystal
 If you don't mind to run at 8Mhz, you can use FUSE settings to set the MCU to use its internal RC oscillator.<br/>
 The problem is however that
 the RC oscillator is sometimes not very well calibrated.
-At least for atmega328p the frequency can deviate up to
+At least for atmega328p, the frequency can deviate up to
 10% from the 8Mhz (usually 0-3% and to be fair, most of the time, very close to 0%). This is a problem for
 Serial communications, which tolerate up to ~2-3% error.
 The AVR microcontrollers have a register called OSCCAL (Oscillator Calibration) which can
-be used to drift the RC frequency and reduse the error to less than 1%.
+be used to drift the RC frequency and reduse the error to less than 1%. The register is
+volatile and need to be set every time the MCU starts.
 
 ### The purpose of this project
-There are a lot of pages to address the calibration problem, and atmel has released a lot of
+There are a lot of internet pages to address the calibration problem, and atmel has released a lot of
 related papers. This project aims to offer an alternative solution :
-- To find the optimal OSCCAL value, using an ISP programmer and a DS3231 rtc module.
-- **More importantly** to provide a mechanism via the "osccal" utility to automatically build bootloader and
+- To find the optimal OSCCAL value, using a USBASP programmer and a DS3231 rtc module.
+- **More importantly** to automatically build bootloader and
 application code capable of fixing the RC frequency.
 
 ### Serial communication problems
-The use of serial communications is a basic reason why we need a calibrated RC oscillator. Introduces
-another type of error however, as the 8MHz clock speed is not divided exactly with the standard
+Even with a perfect crystal, serial communication introduces
+another type of error, as the 8MHz clock speed is not divided exactly with the standard
 serial bitrates. See [WormFood calculator](http://wormfood.net/avrbaudcalc.php) at 8Mhz
 
 ```
@@ -47,12 +48,13 @@ serial bitrates. See [WormFood calculator](http://wormfood.net/avrbaudcalc.php) 
 57600   +2.1%   The proMinis(3.3V 8Mhz) are capable of this serial speed
 115200  -3.5%   This is the reason ProMini@8Mhz cannot do 115.2k
 ```
+If we use the internal oscillator, this error can be added or subtracted to the RC oscillator error.
 
 ### Serial bootloader: Even more problems, and a solution.
 The use of a serial/UART bootloader (a standard, not the one provided here) and at the same time using the internal RC
 oscillator, is a subtle problem. Suppose we know that the optimal
 OSCCAL value for a specific atmega chip is 139 : We develop an Arduino application,
-and right after setup() we have:
+and right after setup() we write:
 
 ```C++
 OSCCAL=139;
@@ -73,11 +75,12 @@ the OSCCAL value will be different, and so on.
 
 ### 57600bps
 57600bps introduces +2.1% error. Suppose we have calibrated the RC oscillator and the error is
-+0.3%. Then the total error becomes +2.4% which is marginal. I suggest if you really need to use
-57600bps in your appplication, to use an OSCCAL = OPTIMAL_OSCCAL - 4 to compensate the error.
++0.3%. Then the total error becomes +2.4% which is marginal.<br/>
+I suggest if you really need to use
+57600bps in your appplication, to use an OSCCAL = OPTIMAL_OSCCAL - 4 to compensate the error.<br/>
 The modified ATmegaBOOT provided, does exactly this, but before jump to the application it sets
 the OSCCAL to the optimal value, because it does not know which speed the application uses.
-In that case a "OSCCAL-=4;" in setup() does the job.
+In that case a "OSCCAL-=4;" in setup() allows reliable 57600bps communication.
 
 ### Reasons to use an external crystal
 - Generally whenever you need better accuracy than the RC oscillator can

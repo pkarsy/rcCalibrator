@@ -3,6 +3,9 @@
 // for internal RC oscillator
 // put the file in the same folder as the sketch
 // and #include "xtal.h"
+#ifndef XTAL_H
+#define XTAL_H
+
 #define XTAL1_OUTPUT  DDRB  |= _BV(6)
 #define XTAL1_INPUT   DDRB  &= ~_BV(6)
 #define XTAL1_HIGH    PORTB |= _BV(6)
@@ -14,3 +17,5 @@
 #define XTAL2_HIGH    PORTB |= _BV(7)
 #define XTAL2_LOW     PORTB &= ~_BV(7)
 #define XTAL2_INPUT_PULLUP XTAL2_INPUT;XTAL2_HIGH
+
+#endif

@@ -3,7 +3,9 @@
 // for internal RC oscillator
 // put the file in the same folder as the sketch and:
 // #include "xtal.h"
-// This file is in public domain
+// This file is part of rcCalibrator
+// https://github.com/pkarsy/rcCalibrator
+
 #ifndef XTAL_H
 #define XTAL_H
 

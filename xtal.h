@@ -1,8 +1,9 @@
 // simple macros to control XTAL1 and XTAL2 pins
 // They work only if the MCU has the fuses set
 // for internal RC oscillator
-// put the file in the same folder as the sketch
-// and #include "xtal.h"
+// put the file in the same folder as the sketch and:
+// #include "xtal.h"
+// This file is in public domain
 #ifndef XTAL_H
 #define XTAL_H
 

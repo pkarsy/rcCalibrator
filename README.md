@@ -61,7 +61,7 @@ OSCCAL=139;
 ```
 
 Seems good ?<br/>
-**Unfortunately it wont help.**<br/>
+**Unfortunately it is not working.**<br/>
 The bootloader starts first, without knowing anything about the magic 139 value, and happily
 waits for code from the UART.
 If the chip happens to be badly factory calibrated, the serial communication will fail
@@ -77,10 +77,35 @@ the OSCCAL value will be different, and so on.
 57600bps introduces +2.1% error. Suppose we have calibrated the RC oscillator and the error is
 +0.3%. Then the total error becomes +2.4% which is marginal.<br/>
 I suggest if you really need to use
-57600bps in your appplication, to use an OSCCAL = OPTIMAL_OSCCAL - 4 to compensate the error.<br/>
+57600bps in your appplication, to use an OSCCAL = OPTIMAL_OSCCAL - 4 to compensate the error.
+The clock ( millis() and friends ) will be ~2% slower than realtime however.<br/>
 The modified ATmegaBOOT provided, does exactly this, but before jump to the application it sets
-the OSCCAL to the optimal value, because it does not know which speed the application uses.
-In that case a "OSCCAL-=4;" in setup() allows reliable 57600bps communication.
+the OSCCAL to the optimal value (The nearest to 8Mhz), because it does not know which speed
+the application uses.<br/>
+So the strategy is:
+
+```C++
+// Use it with the modified AtmagaBOOT
+// At this point the OSCCAL is  the optimal
+// as the bootloader runs first
+void setup() {
+    // The clock will be a little slow
+    // but serial communication will be perfect
+    OSCCAL-=4;
+    Serial.begin(57600);
+    ....
+}
+```
+
+or
+
+```C++
+void setup() {
+   // No OSCCAL manipulation is needed
+   Serial.begin(38400);
+   ....
+}
+```
 
 ### Reasons to use an external crystal
 - Generally whenever you need better accuracy than the RC oscillator can

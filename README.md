@@ -144,7 +144,7 @@ The crystal needs a lot of time to stabilize it's frequency. As you can
 see the incoming phone number is lost. Sometimes even the date and time.
 - This one seems a little strange, but is totally valid. The internal oscillator
 has a lot of [jitter](https://en.wikipedia.org/wiki/Jitter), making it an excellent source of randomness. In conjunction with the Watchdog
-timer (which has its own RC oscillator), can be used to generate random numbers much faster than the
+timer (which has its own RC oscillator), can be used to generate true random numbers much faster than the
 Crystal-Watchdog combination.
 
 ### How "osccal" utility works

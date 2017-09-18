@@ -144,11 +144,11 @@ The crystal needs a lot of time to stabilize it's frequency. As you can
 see the incoming phone number is lost. Sometimes even the date and time.
 - This one seems a little strange, but is totally valid. The internal oscillator
 has a lot of [jitter](https://en.wikipedia.org/wiki/Jitter), making it an excellent source of randomness. In conjunction with the Watchdog
-timer (which has its own RC oscillator), can be used to generate true random numbers much faster than the
+timer (which has its own RC oscillator), can be used to generate ***true*** random numbers much faster than the
 Crystal-Watchdog combination.
 
 ### How "osccal" utility works
-When "osscal" utility runs, it installs the "calibrator.hex" file to the MCU. This code calculates the optimal OSCCAL, using the DS3231 RTC module as clock reference. If the LCD is installed, it displays the values to the tiny screen. Finally and most
+When "osscal" utility runs, it installs the "calibrator.hex" file to the MCU. This Arduino sketch calculates the optimal OSCCAL, using the DS3231 RTC module as clock reference. If the LCD is installed, it displays the values to the tiny screen. Finally and most
 importantly it saves the OSCCAL value as:
 
 **EEPROM byte 0: 0x05<br/>

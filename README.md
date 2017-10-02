@@ -282,6 +282,14 @@ just after main() or setup() and before Serial initialization, put a
 
 ```C++
 OSCCAL = CALIBRATED_OSCAL_VALUE;
+Serial.begin(38400);
+```
+
+or if you insist on using 57600bps
+
+```C++
+OSCCAL = CALIBRATED_OSCAL_VALUE-4; // The MCU runs ~2% slower
+Serial.begin(57600);
 ```
 
 CALIBRATED_OSCAL_VALUE must be passed to the gcc by the Makefile.

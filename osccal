@@ -11,7 +11,7 @@ subprocess.call(["./calibrator/burncalibrator.sh"])
 
 time.sleep(3)
 
-p=subprocess.Popen(["avrdude", "-qq", "-c", "usbasp", "-p", "atmega328p",  "-U", "eeprom:r:-:h"],
+p=subprocess.Popen(["avrdude", "-qq", "-c", "usbasp", "-p", "atmega328p", "-U", "eeprom:r:-:h"],
 stderr=subprocess.PIPE, stdout=subprocess.PIPE)
 
 out = p.communicate()[0]

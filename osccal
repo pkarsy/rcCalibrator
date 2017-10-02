@@ -6,7 +6,6 @@ import sys
 import time
 
 projDir = os.path.dirname( os.path.realpath(sys.argv[0]) )
-#print projDir
 os.chdir( projDir )
 subprocess.call(["./calibrator/burncalibrator.sh"])
 
@@ -23,11 +22,8 @@ if out=='':
 o = [ int(x,16) for x in  out.split(",")[:4] ]
 
 if o[0]==5 and o[3]==5 and o[1]+o[2]==255:
-    #sys.stderr.write "Found OSCCAL"
+    # sys.stderr.write("Found OSCCAL :\n")
     print o[1]
-    #sys.exit(1)
 else:
     sys.stderr.write("No OSCCAL found in eeprom\n")
-
     sys.exit(1)
-    #print 0

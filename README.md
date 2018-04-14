@@ -55,7 +55,7 @@ If we use the internal oscillator, this error can be added or subtracted to the 
 
 ### Serial bootloader: Even more problems, and a solution.
 The use of a serial/UART bootloader (a standard, not the one provided here) and at the same time using the internal RC
-oscillator, is a subtle problem. Suppose we know that the optimal
+oscillator, potentially generates a serious problem. Suppose we know that the optimal
 OSCCAL value for a specific atmega chip is 139 : We develop an Arduino application,
 and right after setup() we write:
 
@@ -198,7 +198,10 @@ I suppose they can be adapted for Windows, but I didn't test it.
 > chmod +x osccal
 ```
 
-Optionally put he "osccal" executable to the PATH. In most desktop oriented distributions
+Note that if you use a newer Arduino version (downloaded somewhere in your harddrive), the installation is more difficult (Edit Makefiles etc) . It is much
+easier to also install the debian/ubuntu provided packages for this project, as they can coexist.
+
+Optionally put the "osccal" executable to the PATH. In most desktop oriented distributions
 a symlink is enough:
 ```sh
 # if the ~/bin does not exist "mkdir ~/bin" and then logout and login again

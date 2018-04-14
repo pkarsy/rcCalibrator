@@ -1,4 +1,5 @@
-// TODO check dc3231 connection
+// This file is part of the rcCalibrator project
+
 
 #include <avr/boot.h>
 #include <avr/wdt.h>
@@ -14,6 +15,9 @@ const bool USE_UART=false;
 const uint8_t DS3231_I2C_ADDR=0x68;
 const byte LCD_I2C_ADDRESS = 0x27;
 
+// New LiquidCrystal by Francisco Malpartida
+// https://bitbucket.org/fmalpartida/new-liquidcrystal/downloads/
+// compliled with the 1.3.5 version
 LiquidCrystal_I2C lcd(LCD_I2C_ADDRESS, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
 
 // LCD presense is determined at runtime

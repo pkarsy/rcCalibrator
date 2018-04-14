@@ -12,8 +12,11 @@ The hardware consists of a USBasp programmer and a DS3231 module, and of course 
 used for its normal purpose to flash the chips. The LCD is optional.To bypass the documentation go
 down to [installation](#software-installation)
 
+### Preample
+A lot of newer MCU's have an internal oscillator wich is 1% factory calibrated. For those MCU's this page is irrelevant. Atmega328p (and others) however can deviate from nominal freequency up to 10% according to the manufacturer. This can cause numerus problems, especially with Serial communications. This page is about solutions on this problem without resorting to external crystal. And the problem exists only with bare atmega. This page is not about arduino boards (UNO, ProMini etc) as all come with external crystal.
+
 ### WARNING
-The use of this utility will erase all the contents of your MCU without notice.
+The use of the "osccal" utility will erase all the contents of your MCU without notice.
 Use it only if you are familiar with ISP programming and know how to set the chip to the old state.
 
 ### WARNING 2

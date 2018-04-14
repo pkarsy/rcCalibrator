@@ -5,6 +5,7 @@
 #include <Wire.h>
 //#include <EEPROM.h>
 //#include
+//#include <LiquidCrystal.h>
 #include <LiquidCrystal_I2C.h>
 
 // only for debuging
@@ -14,6 +15,10 @@ const uint8_t DS3231_I2C_ADDR=0x68;
 const byte LCD_I2C_ADDRESS = 0x27;
 
 LiquidCrystal_I2C lcd(LCD_I2C_ADDRESS, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
+//LiquidCrystal_I2C lcd(LCD_I2C_ADDRESS, 2, 1, 0, 4, 5, 6, 7);
+//LiquidCrystal_I2C lcd(LCD_I2C_ADDRESS, 2, 1, 0, 4, 5, 6, 7);
+//LiquidCrystal_I2C lcd(LCD_I2C_ADDRESS, 16, 2);
+//, 0, 4, 5, 6, 7);
 // LCD presense is determined at runtime
 // so the same code works with and without LCD
 bool LCD_IS_PRESENT = false;
@@ -23,62 +28,6 @@ const byte SQW_PIN=A3;
 // RTC SQW pin is configured to generate 1024 ticks/sec
 // every busy loop is 62.5 msec
 const uint32_t LOOPTIME = 1000000UL*64/1024; // == 62500 usec
-
-/* class _DS3231_ {
-
-    public:
-
-    //static const uint8_t DS3231_I2C_ADDR=0x68;
-    static const uint8_t DS3231_SQW_FREQ_1 = 0b00000000; // 1Hz
-    static const uint8_t DS3231_SQW_FREQ_1024 = 0b00001000; // 1024Hz
-    static const uint8_t DS3231_SQW_FREQ_4096 = 0b00010000; // 4096Hz
-    static const uint8_t DS3231_SQW_FREQ_8192 = 0b00011000; // 8192Hz
-
-    void SQWFrequency(uint8_t freq)
-    {
-        Wire.beginTransmission(DS3231_I2C_ADDR);
-        Wire.write(0x0E);
-        Wire.endTransmission();
-
-        // control register
-        Wire.requestFrom(DS3231_I2C_ADDR, (uint8_t)1);
-
-        uint8_t creg = Wire.read();
-
-        creg &= ~0b00011000; // Set to 0
-        creg |= freq; // Set freq bits
-
-        Wire.beginTransmission(DS3231_I2C_ADDR);
-        Wire.write(0x0E);
-        Wire.write(creg);
-        Wire.endTransmission();
-    }
-
-    void SQWEnable(bool enable)
-    {
-        Wire.beginTransmission(DS3231_I2C_ADDR);
-        Wire.write(0x0E);
-        Wire.endTransmission();
-
-        // control register
-        Wire.requestFrom(DS3231_I2C_ADDR, (uint8_t)1);
-
-        uint8_t creg = Wire.read();
-
-        creg &= ~0b01000000; // Set to 0
-        if (enable == true) {
-            creg |=  0b01000000; // Enable if required.
-            creg &= ~0b00000100; // Clear INTCN bit
-        }
-
-        Wire.beginTransmission(DS3231_I2C_ADDR);
-        Wire.write(0x0E);
-        Wire.write(creg);
-        Wire.endTransmission();
-    }
-
-} ds3231; */
-
 
 void printLine(uint8_t line, int osccal, int freq) {
     char buf[40];
@@ -112,18 +61,6 @@ void printToEeeprom(const char *s) {
 }
 
 void osccal_calibrate() {
-
-    //uint8_t lfuse = boot_lock_fuse_bits_get(GET_LOW_FUSE_BITS);
-    //if (lfuse & 0b10000000==0) {
-    //  lcd.print(
-    //}
-    //if (lfuse != 0xE2) {
-    //    lcd.print("OSCCAL test fail");
-    //    lcd.setCursor(0,1);
-    //    lcd.println("XTAL is in use?");
-    //    return;
-    //}
-    //byte origcal = OSCCAL;
 
     int start_freq = frequency();
 
@@ -167,20 +104,20 @@ void osccal_calibrate() {
             Serial.println(f);
         }
 
-
         if (last_loop) break;
-
 
         if (start_freq>8000) {
             last_loop = (f<8000);
-            OSCCAL--;
-            if (OSCCAL==128) {
+            if (OSCCAL>129) {
+                OSCCAL--;
+            }
+            /* if (OSCCAL==128) {
                 if (LCD_IS_PRESENT) {
                     lcd.setCursor(0,1);
                     lcd.write("ERR: 128 LIMIT");
                 }
                 return;
-            }
+            }*/
         }
         else {
             last_loop = (f>8000);
@@ -198,11 +135,6 @@ void osccal_calibrate() {
 
     if (LCD_IS_PRESENT) printLine(1, bestcal,bestfreq);
 
-    //eep_update(0,0x05); // resembles "OS"
-    //eep_update(1,bestcal);
-    //eep_update(2,255-bestcal);
-    //eep_update(3,0x05);
-
     byte eep[4]={ 0x05, bestcal, (byte)(255-bestcal), 0x05};
     eeprom_update_block(eep,0,4);
 
@@ -210,7 +142,6 @@ void osccal_calibrate() {
         pinMode(0,OUTPUT);
         digitalWrite(0,HIGH);
     }
-
 }
 
 void setup() {
@@ -256,7 +187,9 @@ void setup() {
         // LCD is present
         LCD_IS_PRESENT = true;
         lcd.begin(16,2);  // initialize the lcd
+        //lcd.begin();  // initialize the lcd
         lcd.clear();
+        lcd.backlight();
     }
     if (USE_UART) {
         if (LCD_IS_PRESENT) Serial.println("LCD found");

@@ -15,10 +15,7 @@ const uint8_t DS3231_I2C_ADDR=0x68;
 const byte LCD_I2C_ADDRESS = 0x27;
 
 LiquidCrystal_I2C lcd(LCD_I2C_ADDRESS, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
-//LiquidCrystal_I2C lcd(LCD_I2C_ADDRESS, 2, 1, 0, 4, 5, 6, 7);
-//LiquidCrystal_I2C lcd(LCD_I2C_ADDRESS, 2, 1, 0, 4, 5, 6, 7);
-//LiquidCrystal_I2C lcd(LCD_I2C_ADDRESS, 16, 2);
-//, 0, 4, 5, 6, 7);
+
 // LCD presense is determined at runtime
 // so the same code works with and without LCD
 bool LCD_IS_PRESENT = false;
@@ -64,7 +61,7 @@ void osccal_calibrate() {
 
     int start_freq = frequency();
 
-    if (LCD_IS_PRESENT) printLine(0, OSCCAL,start_freq);
+    if (LCD_IS_PRESENT) printLine(0, OSCCAL, start_freq);
 
     if (OSCCAL<129) {
         const char msg[]="ERR:OUT OF RANGE";
@@ -146,7 +143,6 @@ void osccal_calibrate() {
 
 void setup() {
     wdt_disable();
-
     // Only for debugging. Needs a USB to UART module
     // like FTDI or CP2102 or PL2303
     if (USE_UART) {
@@ -156,48 +152,37 @@ void setup() {
     Wire.begin();
 
     Wire.beginTransmission(DS3231_I2C_ADDR);
-    if (Wire.endTransmission() == 0) {
-        // RTC is present
-        //delay(5);
-
-        //ds3231.SQWFrequency(ds3231.DS3231_SQW_FREQ_1024);
-        //ds3231.SQWEnable(true);
+    if (Wire.endTransmission() == 0) { // RTC is present
         Wire.beginTransmission(DS3231_I2C_ADDR);
         Wire.write(0x0E);
         Wire.write(0b01001000); // SQW 1024Hz is set
         Wire.endTransmission();
-
         pinMode(SQW_PIN,INPUT_PULLUP);
         if (USE_UART) Serial.println("DS3231 found");
-
     }
-    else {
+    else { // RTC is NOT present
         if (USE_UART) {
             Serial.println("FATAL: DS3231 not found");
             while (1);
         }
-        // TODO
-        //printToEeeprom("DS3231 not found");
         printToEeeprom("DS3231 not found");
+        while (1); // Hang here
     }
 
-
     Wire.beginTransmission(LCD_I2C_ADDRESS);
-    if (Wire.endTransmission() == 0) {
-        // LCD is present
+    if (Wire.endTransmission() == 0) { // LCD is present
         LCD_IS_PRESENT = true;
         lcd.begin(16,2);  // initialize the lcd
-        //lcd.begin();  // initialize the lcd
         lcd.clear();
         lcd.backlight();
     }
+
     if (USE_UART) {
         if (LCD_IS_PRESENT) Serial.println("LCD found");
         else Serial.println("LCD is missing");
     }
 
     osccal_calibrate();
-
 }
 
 void loop() {

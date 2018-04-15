@@ -12,26 +12,15 @@ The hardware consists of a USBasp programmer and a DS3231 module, and of course 
 used for its normal purpose to flash the chips. The LCD is optional.To bypass the documentation go
 down to [installation](#software-installation)
 
-### Preample
-A lot of newer MCU's have an internal oscillator wich is 1% factory calibrated. For those MCU's this page is irrelevant. Atmega328p (and others) however can deviate from nominal freequency up to 10% according to the manufacturer. This can cause numerus problems, especially with Serial communications. This page is about solutions on this problem without resorting to external crystal. And the problem exists only with bare atmega. This page is not about arduino boards (UNO, ProMini etc) as all come with external crystal.
-
 ### WARNING
-The use of the "osccal" utility will erase all the contents of your MCU without notice.
+- The use of the "osccal" utility will erase all the contents of your MCU without notice.
 Use it only if you are familiar with ISP programming and know how to set the chip to the old state.
+- 57600 and even more 115200 is somewhat problematic. See the section "57600bps"
 
-### WARNING 2
-57600 and even more 115200 is somewhat problematic. See the section "57600bps"
-
-### The problem
-Most of the projects using atmega328p (including arduino boards), have a crystal or resonator connected to pins XTAL1 and XTAL2.
-If you don't mind to run at 8Mhz, you can use FUSE settings to set the MCU to use its internal RC oscillator.<br/>
-The problem is however that
-the RC oscillator is sometimes not very well calibrated.
-At least for atmega328p, the frequency can deviate up to
-10% from the 8Mhz (usually 0-3% and to be fair, most of the time, very close to 0%). This is a problem for
-Serial communications, which tolerate up to ~2-3% error.
+### The Problem
+A lot of newer MCU's have an internal oscillator wich is 1% factory calibrated. For those MCU's this page is irrelevant. Atmega328p (and others) however can deviate from nominal freequency up to 10% according to the manufacturer (usually 0-3% and to be fair, most of the time, very close to 0%). This can cause numerus problems, especially with Serial communications. This page is about solutions on this problem without resorting to external crystal. And the dillema crystal/RC oscillator arises only with bare atmega's. All arduino boards with atmega328 (UNO, ProMini etc) come with external crystal.
 The AVR microcontrollers have a register called OSCCAL (Oscillator Calibration) which can
-be used to drift the RC frequency and reduse the error to less than 1%. The register is
+be used to drift the RC frequency and reduse the error to less than 1%. Unfortunatelly the register is
 volatile and need to be set every time the MCU starts.
 
 ### The purpose of this project

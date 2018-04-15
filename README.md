@@ -189,12 +189,13 @@ The following instructions are for the linux command line (debian, ubuntu, linux
 I suppose they can be adapted for Windows, but I didn't test it.
 
 ```sh
-# The arduino development environment,the excellent Arduino-Makefile and git of course
-> sudo apt-get install arduino-core arduino-mk git
+# The development environment, and git of course
+> sudo apt-get install avr-libc avrdude git
 ...
 > cd ~/Projects  # Change with the directory you will put the rcCalibrator
 > git clone https://github.com/pkarsy/rcCalibrator.git
 > cd rcCalibrator
+# "osccal" is a python script
 > chmod +x osccal
 ```
 

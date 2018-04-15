@@ -47,20 +47,24 @@ override LDFLAGS       = -Wl,$(LDSECTION)
 OBJCOPY        = avr-objcopy
 OBJDUMP        = avr-objdump
 
-OSCCAL := $(shell ../osccal)
+#OSCCAL := $(_shell ../_osccal)
 
 all:
 	@echo type \"make isp\" to write AtmegaBOOT with corrected OSCCAL to a ATmega328p chip
 
 atmega328_bare: MCU_TARGET = atmega328p
 atmega328_bare: CFLAGS += '-DMAX_TIME_COUNT=F_CPU>>4' '-DNUM_LED_FLASHES=0' '-DWATCHDOG_MODS' -DBAUD_RATE=57600 -DDOUBLE_SPEED
-atmega328_bare: CFLAGS += -DOPTIMAL_OSCCAL_VALUE=$(OSCCAL)
+atmega328_bare: CFLAGS += $(OSCCAL_FLAG)
 atmega328_bare: AVR_FREQ = 8000000L
 atmega328_bare: LDSECTION  = --section-start=.text=0x7800
 atmega328_bare: $(PROGRAM)_$(TARGET).hex
 
-isp: clean atmega328_bare
+isp: clean getosccal atmega328_bare
 	avrdude -qq -p atmega328p -c usbasp -e -U lfuse:w:0xE2:m -U hfuse:w:0xDA:m -U efuse:w:0xfd:m -U flash:w:$(PROGRAM)_$(TARGET).hex
+
+getosccal:
+	$(eval OPTIMAL_OSCCAL_VALUE := $(shell ../osccal) )
+	$(eval OSCCAL_FLAG := -DOPTIMAL_OSCCAL_VALUE=$(OPTIMAL_OSCCAL_VALUE) )
 
 %.elf: $(OBJ)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)

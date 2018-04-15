@@ -213,7 +213,7 @@ a symlink is enough:
 
 ### How this project can be used
 
-There are multiple strategies:
+There are 2 strategies:
 - To find some "good" atmegas and use them on serial applications. This of
 course works only if you have a lot of atmegas and only some of them
 need to be calibrated. This method has the advantage that no
@@ -232,7 +232,7 @@ wanted it to be interchangeable with ProMini 3.3V@8Mhz  so you don't need to
 define/use a custom board in the Arduino build system. "Standard is better than
 better"
 
-### Running the "osccal" utility standalone.
+### Running the "osccal" utility .
 Connect the usbasp programmer (with the RTC) to a USB port,
 attach a atmega chip, and run the executable :
 ```sh
@@ -246,17 +246,13 @@ So from the perspective of the computer, "osccal" is a command witch
 gives a number as a result (The best OSCCAL value = the closer to 8Mhz).
 
 ### Modified AtmegaBOOT installation
-The process is quite automatic. Go to the folder where you downloaded rcCalibrator
 
 ```sh
-> cd ATmegaBOOT
-# The Makefile uses "osccal" utility to find the optimal OSCCAL value (using USBasp+RTC)
-# Compiles the bootloader
-# and uploads it (using the USBasp again)
-> make isp
+> osccal -b
 ```
 
 wait a few seconds ... ready !
+The chip can now programmed as a proMini 3.3V @ 8MHz
 
 It is important to note that the bootloader does NOT use any predefined
 EEPROM or FLASH location to read the OSCCAL. This avoids the danger to accidentally erase

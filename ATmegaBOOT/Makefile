@@ -63,7 +63,7 @@ isp: clean getosccal atmega328_bare
 	avrdude -qq -p atmega328p -c usbasp -e -U lfuse:w:0xE2:m -U hfuse:w:0xDA:m -U efuse:w:0xfd:m -U flash:w:$(PROGRAM)_$(TARGET).hex
 
 getosccal:
-	$(eval OPTIMAL_OSCCAL_VALUE := $(shell ../osccal) )
+	$(eval OPTIMAL_OSCCAL_VALUE := $(if $(OPTIMAL_OSCCAL_VALUE),$(OPTIMAL_OSCCAL_VALUE),$(shell ../osccal)) )
 	$(eval OSCCAL_FLAG := -DOPTIMAL_OSCCAL_VALUE=$(OPTIMAL_OSCCAL_VALUE) )
 
 %.elf: $(OBJ)

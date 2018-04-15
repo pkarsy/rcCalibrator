@@ -32,8 +32,12 @@ if out=='':
 o = [ int(x,16) for x in  out.split(",")[:4] ]
 
 if o[0]==5 and o[3]==5 and o[1]+o[2]==255:
-    # sys.stderr.write("Found OSCCAL :\n")
-    print o[1]
+    optimal_osccal = o[1]
+    if len(sys.argv)>1 and sys.argv[1]=='-b':
+        os.chdir("ATmegaBOOT")
+        subprocess.call(["make","isp","OPTIMAL_OSCCAL_VALUE="+str(optimal_osccal)])
+    else:
+        print(optimal_osccal)
 else:
     sys.stderr.write("No OSCCAL found in eeprom\n")
     sys.exit(1)

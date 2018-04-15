@@ -275,8 +275,7 @@ void app_start() {
     // Modified for rcCalibrator project
     // In a moment we are going to jump to the application and we are not aware what
     // serial speed the application uses. We set the speed as close to 8Mhz as possible.
-    OSCCAL=CALCULATED_OSCCAL_VALUE;
-    // better to use asm(jmp 0)
+    OSCCAL=OPTIMAL_OSCCAL_VALUE;
     app_start_orig();
 }
 
@@ -284,7 +283,13 @@ void app_start() {
 /* main program starts here */
 int main(void)
 {
-    OSCCAL=CALCULATED_OSCCAL_VALUE-4; // to be about 2% slower, which is perfect for 57.6
+    if ( (OPTIMAL_OSCCAL_VALUE > 128+4) || (OPTIMAL_OSCCAL_VALUE <  128) ) {
+        OSCCAL = OPTIMAL_OSCCAL_VALUE-4; // to be about 2% slower, which is perfect for 57.6
+    }
+    else {
+        // for values 128-132
+        OSCCAL = 128;
+    }
 
     uint8_t ch,ch2;
     uint16_t w;

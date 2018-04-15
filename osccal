@@ -7,9 +7,18 @@ import time
 
 projDir = os.path.dirname( os.path.realpath(sys.argv[0]) )
 os.chdir( projDir )
+
+sys.stderr.write("########################################################\n")
+sys.stderr.write("############### burning calibrator #####################\n")
+sys.stderr.write("########################################################\n")
+
 subprocess.call(["./calibrator/burncalibrator.sh"])
 
 time.sleep(3)
+
+sys.stderr.write("########################################################\n")
+sys.stderr.write("################# reading result #######################\n")
+sys.stderr.write("########################################################\n")
 
 p=subprocess.Popen(["avrdude", "-qq", "-c", "usbasp", "-p", "atmega328p", "-U", "eeprom:r:-:h"],
 stderr=subprocess.PIPE, stdout=subprocess.PIPE)

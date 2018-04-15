@@ -47,32 +47,26 @@ override LDFLAGS       = -Wl,$(LDSECTION)
 OBJCOPY        = avr-objcopy
 OBJDUMP        = avr-objdump
 
-all: atmega328_bare
+OSCCAL := $(shell ../osccal)
 
-#read_osccal:
-#	OSCCAL:=(shell ./get_osccal.py)
+all:
+	@echo type \"make isp\" to write AtmegaBOOT with corrected OSCCAL to a ATmega328p chip
 
-
-#atmega328_bare:
 atmega328_bare: MCU_TARGET = atmega328p
 atmega328_bare: CFLAGS += '-DMAX_TIME_COUNT=F_CPU>>4' '-DNUM_LED_FLASHES=0' '-DWATCHDOG_MODS' -DBAUD_RATE=57600 -DDOUBLE_SPEED
-atmega328_bare: CFLAGS += -DCALCULATED_OSCCAL_VALUE=$(shell ../osccal)
+atmega328_bare: CFLAGS += -DOPTIMAL_OSCCAL_VALUE=$(OSCCAL)
 atmega328_bare: AVR_FREQ = 8000000L
 atmega328_bare: LDSECTION  = --section-start=.text=0x7800
 atmega328_bare: $(PROGRAM)_$(TARGET).hex
 
-#atmega328_bare_isp: clean
-atmega328_bare_isp: clean atmega328_bare
-	avrdude -qq -p atmega328p -c usbasp -v -e -U lfuse:w:0xE2:m -U hfuse:w:0xDA:m -U efuse:w:0x05:m -U flash:w:$(PROGRAM)_$(TARGET).hex
-	$(MAKE) clean
-
-isp: atmega328_bare_isp
+isp: clean atmega328_bare
+	avrdude -qq -p atmega328p -c usbasp -e -U lfuse:w:0xE2:m -U hfuse:w:0xDA:m -U efuse:w:0xfd:m -U flash:w:$(PROGRAM)_$(TARGET).hex
 
 %.elf: $(OBJ)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 clean:
-	rm -rf *.o *.elf *.lst *.map *.sym *.lss *.eep *.srec *.bin *.hex
+	rm -f *.o *.elf *.lst *.map *.sym *.lss *.eep *.srec *.bin *.hex
 
 %.lst: %.elf
 	$(OBJDUMP) -h -S $< > $@

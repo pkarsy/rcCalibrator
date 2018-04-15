@@ -189,8 +189,8 @@ The following instructions are for the linux command line (debian, ubuntu, linux
 I suppose they can be adapted for Windows, but I didn't test it.
 
 ```sh
-# The arduino development environment and the excellent Arduino-Makefile
-> sudo apt-get install arduino-core arduino-mk
+# The arduino development environment,the excellent Arduino-Makefile and git of course
+> sudo apt-get install arduino-core arduino-mk git
 ...
 > cd ~/Projects  # Change with the directory you will put the rcCalibrator
 > git clone https://github.com/pkarsy/rcCalibrator.git
@@ -198,8 +198,8 @@ I suppose they can be adapted for Windows, but I didn't test it.
 > chmod +x osccal
 ```
 
-Note that if you use a newer Arduino version (downloaded somewhere in your harddrive), the installation is more difficult (Edit Makefiles etc) . It is much
-easier to also install the debian/ubuntu provided packages for this project, as they can coexist.
+Note: There is no much point trying to use the avrdude wich comes with Arduino tarbals, as the
+standard (debian/ubuntu) avrdude works fine.
 
 Optionally put the "osccal" executable to the PATH. In most desktop oriented distributions
 a symlink is enough:
@@ -277,8 +277,7 @@ can then be used just like a proMini to upload code with 57600bps.
 Indeed, according to my tests, the upload process is as reliable as with a crystal.
 
 ### rfboot
-I have written the bootloader [rfboot](https://github.com/pkarsy/rfboot) which can (optionally) set the optimal OSCCAL value, before
-jump to the application. The bootloader itself does not need any OSCCAL calibration to work (it uses SPI),
+I have written the bootloader [rfboot](https://github.com/pkarsy/rfboot) which can (optionally) set the optimal OSCCAL value, before jump to the application. The bootloader itself does not need any OSCCAL calibration to work (it uses SPI),
 but the application might need it.
 
 ### applications without bootloader
@@ -287,18 +286,18 @@ get the OSCCAL value before write the application code. Somewhere inside the app
 just after main() or setup() and before Serial initialization, put a
 
 ```C++
-OSCCAL = CALIBRATED_OSCAL_VALUE;
+OSCCAL = OPTIMAL_OSCCAL_VALUE;
 Serial.begin(38400);
 ```
 
 or if you insist on using 57600bps
 
 ```C++
-OSCCAL = CALIBRATED_OSCAL_VALUE-4; // The MCU runs ~2% slower
+OSCCAL = OPTIMAL_OSCCAL_VALUE-4; // The MCU runs ~2% slower
 Serial.begin(57600);
 ```
 
-CALIBRATED_OSCAL_VALUE must be passed to the gcc by the Makefile.
+OPTIMAL_OSCCAL_VALUE must be passed to the gcc by the Makefile.
 See the Makefile of the ATmegaBOOT bootloader, included here.
 
 ### Alternative method. Read the OSCCAL value from EEPROM

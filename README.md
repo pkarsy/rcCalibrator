@@ -106,7 +106,7 @@ provide. Anything more accurate than 1% should be done with external crystal/res
 - When the trouble to calibrate the RC oscillator outweighs
 the trouble to install the crystal.<br/>
 I believe using the "osccal" utility, it is much easier (or at least, this is my intention) to have a calibrated
-atmega with a perfectly working bootloader, than to install the crystal. "make isp" is all that is needed.
+atmega with a perfectly working bootloader, than to install the crystal. "osccal -b" is all that is needed.
 
 ### Reasons to use the internal oscillator
 
@@ -125,9 +125,9 @@ A lot of projects need a lot of GPIO pins, and 2 more pins
 can make the difference. I include a very simple "library" to control these pins
 [xtal.h](xtal.h)
 - A lot of projects don't need any accuracy of RC oscillator.
-- **Much faster startup from sleep mode.** This is the reason this project exists.
+- **Much faster startup from sleep mode.** This is the basic reason this page created.
 I have a project where the MCU is in sleep, it is connected to a GSM modem with
-hardware serial(UART), and wakes up from an incoming SMS.
+hardware serial(UART), and wakes up from an incoming SMS (ora TCP packet).
 Here is the message we get, when the (calibrated) RC oscillator is in use.<br/>
 **"+CMT: "+30691234567","pkar","17/06/18,08:10:41+12"**<br/>
 Here is the message, if we use a crystal<br/>
@@ -135,7 +135,7 @@ Here is the message, if we use a crystal<br/>
 The crystal needs a lot of time to stabilize it's frequency. As you can
 see the incoming phone number is lost. Sometimes even the date and time.
 - This one seems a little strange, but is totally valid. The internal oscillator
-has a lot of [jitter](https://en.wikipedia.org/wiki/Jitter), making it an excellent source of randomness. In conjunction with the Watchdog
+has a lot of [jitter](https://en.wikipedia.org/wiki/Jitter), wich usually isnot a ood thing, but can be used as an excellent source of randomness. In conjunction with the Watchdog
 timer (which has its own RC oscillator), can be used to generate ***true*** random numbers much faster than the
 Crystal-Watchdog combination.
 

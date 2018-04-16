@@ -159,7 +159,7 @@ it to the voltage you are going to run the atmega328 after the calibration.
 Probably the voltage will be 3.3V as we talk about a 8Mhz system.
 - a ZIF developer board and
 - a DS3231 RTC module. You
-- also need some female-female Dupont 2.54 cables, better to be sort.
+- a few female-female Dupont 2.54 cables.
 - If you want visual feedback, you need also a 16x2 LCD and an LCD i2c adapter(search ebay), and to solder the secondary
 i2c header of the DS3231 module. The LCD modules
 come as 5V and 3.3V variants. Probably you need the 3.3V as mentioned above.
@@ -174,8 +174,9 @@ PC3(Arduino A3)  |   SQW |   - | Gray
 
 
 ### Software installation
-The following instructions are for the linux command line (debian, ubuntu, linux mint).
-I suppose they can be adapted for Windows, but I didn't test it.
+The following instructions are for the linux command line (debian stretch, ubuntu  16.x, linux mint 18.x).
+Older distrbutions (Ubuntu 14.x Mint 17.x) have an older avrdude and need tweaking.
+I suppose that the instructions can be adapted for Windows, but I didn't test it.
 
 ```sh
 # The development environment, and git of course

@@ -83,9 +83,10 @@ So the strategy is:
 void setup() {
     // The clock will be a little slow
     // but serial communication will be perfect
-    // Note that "osccal" avoids the values 128-131 (finds the optimal value
-    // below 128) and there is no danger to go below 127
-    // (See Freq-OSCCAL graph in the datasheet)
+    // Note that "osccal" avoids the values 128-131
+    // and there is no danger to go from the upper OSCCAL region (128 and up)
+    // to the lower (127 and down)
+    // (See Frequency-OSCCAL graph in the datasheet)
     OSCCAL-=4;
     Serial.begin(57600);
     ....
@@ -136,7 +137,7 @@ Here is the message we get, when the (calibrated) RC oscillator is in use.<br/>
 Here is the message, if we use a crystal<br/>
 **S��������b���ɉ,"17/06/18,09:51:13+12"**<br/>
 The crystal needs a lot of time to stabilize it's frequency. As you can
-see the incoming phone number is lost. Sometimes even the date and time.
+see the incoming phone number is lost. Sometimes even the date and time. Ok there are other solutions, for example flow control, but are complex.
 - This one seems a little strange, but is totally valid. The internal oscillator
 has a lot of [jitter](https://en.wikipedia.org/wiki/Jitter), not usually a good thing, but can be used as an excellent source of randomness. In conjunction with the Watchdog
 timer (which has its own RC oscillator), can be used to generate ***true*** random numbers much faster than the

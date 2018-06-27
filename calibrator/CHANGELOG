@@ -1,0 +1,1 @@
+2018-06-27 : Usually OSCCAL is in the range 129 - 190. Some atmega328 chips come with factory OSCCAL just above 128, but still with higher frequency than 8MHz. The transition from OSCALL 127 to 128 however produces a jump in the freequency (See datasheet). Now the sketch detects this condition and searches for optimal OSCCAL value in the lower range. 0-127

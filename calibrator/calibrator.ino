@@ -1,16 +1,8 @@
 // This file is part of the rcCalibrator project
 
-
 #include <avr/boot.h>
 #include <avr/wdt.h>
 #include <Wire.h>
-//#include <EEPROM.h>
-//#include
-//#include <LiquidCrystal.h>
-#include <LiquidCrystal_I2C.h>
-
-// only for debuging
-const bool USE_UART=false;
 
 const uint8_t DS3231_I2C_ADDR=0x68;
 const byte LCD_I2C_ADDRESS = 0x27;
@@ -18,11 +10,12 @@ const byte LCD_I2C_ADDRESS = 0x27;
 // New LiquidCrystal by Francisco Malpartida
 // https://bitbucket.org/fmalpartida/new-liquidcrystal/downloads/
 // compliled with the 1.3.5 version
+#include <LiquidCrystal_I2C.h>
 LiquidCrystal_I2C lcd(LCD_I2C_ADDRESS, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
 
 // LCD presense is determined at runtime
 // so the same code works with and without LCD
-bool LCD_IS_PRESENT = false;
+bool lcd_is_present = false;
 
 const byte SQW_PIN=A3;
 
@@ -57,25 +50,15 @@ int frequency() {
     return (int32_t)(micros()-t)*80/625;
 }
 
-void printToEeeprom(const char *s) {
-    eeprom_update_block( s,0,strlen(s)+1 );
-}
+//void printToEeeprom(const char *s) {
+//    eeprom_update_block( s,0,strlen(s)+1 );
+//}
 
-void osccal_calibrate() {
+bool osccal_calibrate() {
+    // We need OSCCAL>=129 if OSCCAL is above 128
+    if (OSCCAL==128) OSCCAL=85;
 
     int start_freq = frequency();
-
-    if (LCD_IS_PRESENT) printLine(0, OSCCAL, start_freq);
-
-    if (OSCCAL<129) {
-        const char msg[]="ERR:OUT OF RANGE";
-        if (LCD_IS_PRESENT) {
-            lcd.setCursor(0,1);
-            lcd.write(msg);
-        }
-        printToEeeprom(msg);
-        return;
-    }
 
     byte bestcal=OSCCAL;
     int bestfreq = start_freq;
@@ -86,75 +69,40 @@ void osccal_calibrate() {
     bool last_loop=false;
 
     while (true) {
-        wdt_reset();
         int f = frequency();
-
         if (abs(f-8000)<abs(bestfreq-8000)) {
             bestfreq = f;
             bestcal = OSCCAL;
         }
-
-        if (USE_UART) {
-            Serial.println("##################");
-            Serial.print(OSCCAL);
-            Serial.print(" f=");
-            Serial.println(f);
-            Serial.print("best=");
-            Serial.print(bestcal);
-            Serial.print(" f=");
-            Serial.println(f);
-        }
-
         if (last_loop) break;
-
         if (start_freq>8000) {
             last_loop = (f<8000);
-            if (OSCCAL>129) {
-                OSCCAL--;
+            if (129==OSCCAL and false==last_loop) {
+                // We need to search optimal OSCCAL in the range 0-127
+                OSCCAL=85;
+                // We reurn failure and setup will run osccal_calibrate again
+                return false;
             }
-            /* if (OSCCAL==128) {
-                if (LCD_IS_PRESENT) {
-                    lcd.setCursor(0,1);
-                    lcd.write("ERR: 128 LIMIT");
-                }
-                return;
-            }*/
+            OSCCAL--;
         }
         else {
             last_loop = (f>8000);
             OSCCAL++;
-            if (OSCCAL==192) {
-                if (LCD_IS_PRESENT) {
-                    lcd.setCursor(0,1);
-                    lcd.write("ERR: 192 LIMIT");
-                }
-                return;
-            }
-            if (f>8000) break;
         }
     }
 
-    if (LCD_IS_PRESENT) printLine(1, bestcal,bestfreq);
-
+    if (lcd_is_present) printLine(1, bestcal,bestfreq);
+    // We write to the EEPROM so avrdude can read the value
     byte eep[4]={ 0x05, bestcal, (byte)(255-bestcal), 0x05};
     eeprom_update_block(eep,0,4);
 
-    if (! USE_UART) {
-        pinMode(0,OUTPUT);
-        digitalWrite(0,HIGH);
-    }
+    return true;
 }
 
 void setup() {
+    bool rtc_is_present = false;
     wdt_disable();
-    // Only for debugging. Needs a USB to UART module
-    // like FTDI or CP2102 or PL2303
-    if (USE_UART) {
-        Serial.begin(38400);
-    }
-
     Wire.begin();
-
     Wire.beginTransmission(DS3231_I2C_ADDR);
     if (Wire.endTransmission() == 0) { // RTC is present
         Wire.beginTransmission(DS3231_I2C_ADDR);
@@ -162,31 +110,38 @@ void setup() {
         Wire.write(0b01001000); // SQW 1024Hz is set
         Wire.endTransmission();
         pinMode(SQW_PIN,INPUT_PULLUP);
-        if (USE_UART) Serial.println("DS3231 found");
+        rtc_is_present = true;
     }
-    else { // RTC is NOT present
-        if (USE_UART) {
-            Serial.println("FATAL: DS3231 not found");
-            while (1);
-        }
-        printToEeeprom("DS3231 not found");
-        while (1); // Hang here
-    }
+    //else { // RTC is NOT present
+        // We can't do much
+        // as probably LCD is also not present
+        //while (1); // Hang here
+    //}
 
     Wire.beginTransmission(LCD_I2C_ADDRESS);
     if (Wire.endTransmission() == 0) { // LCD is present
-        LCD_IS_PRESENT = true;
+        lcd_is_present = true;
         lcd.begin(16,2);  // initialize the lcd
         lcd.clear();
         lcd.backlight();
     }
 
-    if (USE_UART) {
-        if (LCD_IS_PRESENT) Serial.println("LCD found");
-        else Serial.println("LCD is missing");
+    if (!rtc_is_present) {
+        // We can't do much
+        // but if LCD is connected (unlikely) we print a message
+        if (lcd_is_present) {
+            lcd.setCursor(0,0); // first line
+            lcd.write("DS3231 not found");
+        }
+        while(1);
     }
 
-    osccal_calibrate();
+    int start_freq = frequency();
+    if (lcd_is_present) printLine(0, OSCCAL, start_freq);
+    if (!osccal_calibrate()) {
+        // Now OSCCAL is set to 85 and we run osccal_calibrate one more time
+        osccal_calibrate();
+    }
 }
 
 void loop() {

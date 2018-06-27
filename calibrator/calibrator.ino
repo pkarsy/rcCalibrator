@@ -6,7 +6,7 @@
 
 const uint8_t DS3231_I2C_ADDR=0x68;
 const uint8_t LCD_I2C_ADDRESS = 0x27;
-const uint8_t LOW_OSCCAL_START=85;
+const uint8_t LOW_OSCCAL_START=80;
 
 // New LiquidCrystal by Francisco Malpartida
 // https://bitbucket.org/fmalpartida/new-liquidcrystal/downloads/
@@ -71,7 +71,15 @@ bool osccal_calibrate() {
             bestfreq = f;
             bestcal = OSCCAL;
         }
-        if (last_loop) break;
+        if (last_loop) {
+            if (bestcal>=128 and bestcal<132) {
+                // We avoid 128-131 as these values cannot be used by ATmegaBOOT
+                // to setup 57600 bps correctly
+                return false;
+            }
+            // otherwise we leave the loop and write the value to the eeprom.
+            break;
+        }
         if (start_freq>8000) {
             last_loop = (f<8000);
             if (129==OSCCAL and false==last_loop) {
@@ -86,10 +94,12 @@ bool osccal_calibrate() {
         }
     }
 
-    if (lcd_is_present) printLine(1, bestcal,bestfreq);
+
     // We write to the EEPROM so avrdude can read the value
     byte eep[4]={ 0x05, bestcal, (byte)(255-bestcal), 0x05};
     eeprom_update_block(eep,0,4);
+
+    if (lcd_is_present) printLine(1, bestcal,bestfreq);
 
     return true;
 }

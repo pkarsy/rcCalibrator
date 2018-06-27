@@ -83,13 +83,16 @@ So the strategy is:
 void setup() {
     // The clock will be a little slow
     // but serial communication will be perfect
+    // Note that "osccal" avoids the values 128-131 (finds the optimal value
+    // below 128) and there is no danger to go below 127
+    // (See Freq-OSCCAL graph in the datasheet)
     OSCCAL-=4;
     Serial.begin(57600);
     ....
 }
 ```
 
-or
+or (recommended)
 
 ```C++
 void setup() {

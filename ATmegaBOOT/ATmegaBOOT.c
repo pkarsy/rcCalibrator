@@ -273,8 +273,9 @@ void (*app_start_orig)(void) = 0x0000;
 
 void app_start() {
     // Modified for rcCalibrator project
-    // In a moment we are going to jump to the application and we are not aware what
-    // serial speed the application uses. We set the speed as close to 8Mhz as possible.
+    // In a moment we are going to jump to the application and we are
+    // not aware what serial speed the application uses. We set the
+    // speed as close to 8Mhz as possible.
     OSCCAL=OPTIMAL_OSCCAL_VALUE;
     app_start_orig();
 }
@@ -283,11 +284,19 @@ void app_start() {
 /* main program starts here */
 int main(void)
 {
-    if ( (OPTIMAL_OSCCAL_VALUE > 128+4) || (OPTIMAL_OSCCAL_VALUE <  128) ) {
+    // Note that "osccal" avoids the values 128-131
+    // and there is no danger to go from the upper OSCCAL region (128, 129, ...)
+    // to the lower (..., 126, 127) with the operaqtion
+    // OSCCAL = OPTIMAL_OSCCAL_VALUE-4;
+    // See Frequency-OSCCAL graph in the datasheet
+    // However the test does not hurt, so we leave it as is
+    if ( (OPTIMAL_OSCCAL_VALUE >= 128+4) || (OPTIMAL_OSCCAL_VALUE <  128) ) {
         OSCCAL = OPTIMAL_OSCCAL_VALUE-4; // to be about 2% slower, which is perfect for 57.6
     }
     else {
         // for values 128-132
+        // Normally values 128-132 are not used by "osccal" and this
+        // branch will not run
         OSCCAL = 128;
     }
 

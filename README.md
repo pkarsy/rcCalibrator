@@ -84,9 +84,9 @@ void setup() {
     // The clock will be a little slow
     // but serial communication will be perfect
     // Note that "osccal" avoids the values 128-131
-    // and there is no danger to go from the upper OSCCAL region (128 and up)
-    // to the lower (127 and down)
-    // (See Frequency-OSCCAL graph in the datasheet)
+    // and there is no danger to go from the upper OSCCAL region (128, 129, ...)
+    // to the lower (..., 126, 127)
+    // See Frequency-OSCCAL graph in the datasheet
     OSCCAL-=4;
     Serial.begin(57600);
     ....

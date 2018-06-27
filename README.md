@@ -127,7 +127,7 @@ can make the difference. I include a very simple "library" to control these pins
 - A lot of projects don't need any accuracy of RC oscillator.
 - **Much faster startup from sleep mode.** This is the basic reason this page created.
 I have a project where the MCU is in sleep, it is connected to a GSM modem with
-hardware serial(UART), and wakes up from an incoming SMS (ora TCP packet).
+hardware serial(UART), and wakes up from an incoming SMS (or a TCP packet).
 Here is the message we get, when the (calibrated) RC oscillator is in use.<br/>
 **"+CMT: "+30691234567","pkar","17/06/18,08:10:41+12"**<br/>
 Here is the message, if we use a crystal<br/>
@@ -154,11 +154,9 @@ to the console.
 
 ### Assembling the hardware
 Although the photo at the start of the page says it all, here are some instructions:
-- You need a usbasp ISP programmer. I recommend to use a module with 3.3V/5V option and switch
-it to the voltage you are going to run the atmega328 after the calibration.
-Probably the voltage will be 3.3V as we talk about a 8Mhz system.
+- You need a usbasp ISP programmer. I recommend to use a module with 3.3V/5V option and switch it to the voltage you are going to run the atmega328 after the calibration. Probably the voltage will be 3.3V as we talk about a 8Mhz system.
 - a ZIF developer board and
-- a DS3231 RTC module. You
+- a DS3231 RTC module.
 - a few female-female Dupont 2.54 cables.
 - If you want visual feedback, you need also a 16x2 LCD and an LCD i2c adapter(search ebay), and to solder the secondary
 i2c header of the DS3231 module. The LCD modules
@@ -244,24 +242,12 @@ gives a number as a result (The best OSCCAL value = the closer to 8Mhz).
 wait a few seconds ... ready !
 The chip can now programmed as a proMini 3.3V @ 8MHz
 
-It is important to note that the bootloader does NOT use any predefined
-EEPROM or FLASH location to read the OSCCAL. This avoids the danger to accidentally erase
-the EEPROM by the application (to store some data), with probably catastrophic results
-for the project. The bootloader is recompiled for every
-new chip and the OSCCAL value is saved in the bootloader
-area and is unique for this chip. This is the reason there is no precompiled HEX for this
-bootloader.
+It is important to note that the bootloader does NOT use any predefined EEPROM or FLASH location to read the OSCCAL. This avoids the danger to accidentally erase the EEPROM by the application (to store some data), with probably catastrophic results for the project. The bootloader is recompiled for every new chip and the OSCCAL value is saved in the bootloader area and is unique for this chip. This is the reason there is no precompiled HEX for this bootloader.
 
 ### Comparing ATmegaBoot(with OSCCAL support) with the stock ATmegaBOOT/optiboot
 There are some pages around, that give instructions to use
-an uncalibrated atmega328p with a 38400 bootloader(usually the stock optiboot or ATmegaBOOT). This is
-unreliable however, as some chips come from the factory with clock errors
-far worse than 2%. It is also non standard and requires an Arduino custom board definition (as far as I know).<br/>
-The ATmegaBOOT Makefile included here, uses the "osccal" utility
-to find the correct OSCCAL value. It compiles
-the ATmegaBOOT against this value and then uploads the .hex file to the atmega328p chip. This chip
-can then be used just like a proMini to upload code with 57600bps.
-Indeed, according to my tests, the upload process is as reliable as with a crystal.
+an uncalibrated atmega328p with a 38400 bootloader(usually the stock optiboot or ATmegaBOOT). This is unreliable however, as some chips come from the factory with clock errors far worse than 2%. It is also non standard and requires an Arduino custom board definition (as far as I know).<br/>
+The ATmegaBOOT Makefile included here, uses the "osccal" utility to find the correct OSCCAL value. It compiles the ATmegaBOOT against this value and then uploads the .hex file to the atmega328p chip. This chip can then be used just like a proMini to upload code with 57600bps. Indeed, according to my tests, the upload process is as reliable as with a crystal.
 
 ### rfboot
 I have written the bootloader [rfboot](https://github.com/pkarsy/rfboot) which can (optionally) set the optimal OSCCAL value, before jump to the application. The bootloader itself does not need any OSCCAL calibration to work (it uses SPI),
@@ -290,6 +276,5 @@ See the Makefile of the ATmegaBOOT bootloader, included here.
 ### Alternative method. Read the OSCCAL value from EEPROM
 See [How "osccal" utility works](#how-osccal-utility-works) above.<br/>
 The application reads the EEPROM and uses the OSCCAL value provided.
-However I find the method quite fragile. A programming mistake can overwrite the contents
-of the EEPROM.
+However I find the method quite fragile. A programming mistake can overwrite the contents of the EEPROM.
 

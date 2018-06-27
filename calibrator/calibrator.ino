@@ -5,7 +5,8 @@
 #include <Wire.h>
 
 const uint8_t DS3231_I2C_ADDR=0x68;
-const byte LCD_I2C_ADDRESS = 0x27;
+const uint8_t LCD_I2C_ADDRESS = 0x27;
+const uint8_t LOW_OSCCAL_START=85;
 
 // New LiquidCrystal by Francisco Malpartida
 // https://bitbucket.org/fmalpartida/new-liquidcrystal/downloads/
@@ -50,13 +51,9 @@ int frequency() {
     return (int32_t)(micros()-t)*80/625;
 }
 
-//void printToEeeprom(const char *s) {
-//    eeprom_update_block( s,0,strlen(s)+1 );
-//}
-
 bool osccal_calibrate() {
-    // We need OSCCAL>=129 if OSCCAL is above 128
-    if (OSCCAL==128) OSCCAL=85;
+    // OSCCAL==128 is problematic as we can't reduce the value (See data sheet)
+    if (OSCCAL==128) OSCCAL=LOW_OSCCAL_START;
 
     int start_freq = frequency();
 
@@ -78,8 +75,6 @@ bool osccal_calibrate() {
         if (start_freq>8000) {
             last_loop = (f<8000);
             if (129==OSCCAL and false==last_loop) {
-                // We need to search optimal OSCCAL in the range 0-127
-                OSCCAL=85;
                 // We reurn failure and setup will run osccal_calibrate again
                 return false;
             }
@@ -112,11 +107,6 @@ void setup() {
         pinMode(SQW_PIN,INPUT_PULLUP);
         rtc_is_present = true;
     }
-    //else { // RTC is NOT present
-        // We can't do much
-        // as probably LCD is also not present
-        //while (1); // Hang here
-    //}
 
     Wire.beginTransmission(LCD_I2C_ADDRESS);
     if (Wire.endTransmission() == 0) { // LCD is present
@@ -139,11 +129,13 @@ void setup() {
     int start_freq = frequency();
     if (lcd_is_present) printLine(0, OSCCAL, start_freq);
     if (!osccal_calibrate()) {
-        // Now OSCCAL is set to 85 and we run osccal_calibrate one more time
+        // We need to search optimal OSCCAL in the range 0-127
+        // OSCCAL is set to LOW_OSCCAL_START and we run osccal_calibrate again
+        OSCCAL=LOW_OSCCAL_START;
         osccal_calibrate();
     }
 }
 
 void loop() {
-
+    // nothing to do
 }

@@ -23,7 +23,7 @@ The AVR microcontrollers have a register called OSCCAL (Oscillator Calibration) 
 be used to drift the RC frequency and reduse the error to less than 1%. Unfortunatelly the register is
 volatile and need to be set every time the MCU starts.
 
-### The purpose of this project
+### Purpose
 There are a lot of internet pages to address the calibration problem, and atmel has released a lot of
 related papers. This project aims to offer an alternative solution :
 - To find the optimal OSCCAL value, using a USBASP programmer and a DS3231 rtc module.
@@ -203,7 +203,7 @@ a symlink is enough:
 > ln -s ~/Projects/rcCalibrator/osccal
 ```
 
-### How this project can be used
+### Usage
 
 There are 2 strategies:
 - To find some "good" atmegas and use them on serial applications. This of

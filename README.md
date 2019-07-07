@@ -203,7 +203,7 @@ a symlink is enough:
 > ln -s ~/Projects/rcCalibrator/osccal
 ```
 
-### How this project can be used
+### Usage
 
 There are 2 strategies:
 - To find some "good" atmegas and use them on serial applications. This of

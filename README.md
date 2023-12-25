@@ -176,9 +176,7 @@ PC3(Arduino A3)  |   SQW |   - | Gray
 
 
 ### Software installation
-The following instructions are for the linux command line (debian stretch, ubuntu  16.x, linux mint 18.x).
-Older distrbutions (Ubuntu 14.x Mint 17.x) have an older avrdude and need tweaking.
-I suppose that the instructions can be adapted for Windows, but I didn't test it.
+The following instructions are for the linux command line (tested with Ubuntu 22.04,linux mint 21.2).
 
 ```sh
 # The development environment, and git of course

@@ -253,10 +253,6 @@ There are some pages around, that give instructions to use
 an uncalibrated atmega328p with a 38400 bootloader(usually the stock optiboot or ATmegaBOOT). This is unreliable however, as some chips come from the factory with clock errors far worse than 2%. It is also non standard and requires an Arduino custom board definition (as far as I know).<br/>
 The ATmegaBOOT Makefile included here, uses the "osccal" utility to find the correct OSCCAL value. It compiles the ATmegaBOOT against this value and then uploads the .hex file to the atmega328p chip. This chip can then be used just like a proMini to upload code with 57600bps. Indeed, according to my tests, the upload process is as reliable as with a crystal.
 
-### rfboot
-I have written the bootloader [rfboot](https://github.com/pkarsy/rfboot) which can (optionally) set the optimal OSCCAL value, before jump to the application. The bootloader itself does not need any OSCCAL calibration to work (it uses SPI),
-but the application might need it.
-
 ### applications without bootloader
 You have to modify the Makefile of your project to use the "osscal" as a shell command and
 get the OSCCAL value before write the application code. Somewhere inside the application

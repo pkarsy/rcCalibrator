@@ -236,6 +236,7 @@ So from the perspective of the computer, "osccal" is a command witch
 gives a number as a result (The best OSCCAL value = the closer to 8Mhz).
 
 ### Modified AtmegaBOOT installation
+This can to be used with a bare atmega328 **without a crystal**
 
 ```sh
 > osccal -b

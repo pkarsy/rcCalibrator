@@ -29,7 +29,7 @@ if out=='':
     sys.stderr.write("No eeprom data\n")
     sys.exit(1)
 
-o = [ int(x,16) for x in  out.split(",")[:4] ]
+o = [ int(x,16) for x in  out.split(b',')[:4] ]
 
 if o[0]==5 and o[3]==5 and o[1]+o[2]==255:
     optimal_osccal = o[1]

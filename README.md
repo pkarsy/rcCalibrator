@@ -244,7 +244,7 @@ This can be used with a bare atmega328 **without a crystal**. Dont do this on ar
 
 wait a few seconds ... ready !
 The chip can now programmed as a proMini 3.3V @ 8MHz.
-**Note however that even if you install a crystal the chip will use the internal RC oscilator**
+**Note however that even if you install a crystal, the chip will use the internal RC oscilator until you fix the fuses**
 
 It is also important to note that the bootloader does NOT use any predefined EEPROM or FLASH location to read the OSCCAL. This avoids the danger to accidentally erase the EEPROM by the application (to store some data), with probably catastrophic results for the project. The bootloader is recompiled for every new chip and the OSCCAL value is saved in the bootloader area and is unique for this chip. This is the reason there is no precompiled HEX for this bootloader.
 

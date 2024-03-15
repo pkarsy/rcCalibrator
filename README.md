@@ -14,8 +14,8 @@ down to [installation](#software-installation)
 
 ### WARNING
 - The use of the "osccal" utility will erase all the contents of your MCU without notice.
-- Even if you connect a crystall the chip will ignore it
-Use it only if you are familiar with ISP programming and know how to set the chip to the old state.
+- Even if you connect a crystall the chip will ignore it ! 
+Use *osscal* only if you are familiar with ISP programming and know how to set the chip to the old state.
 - 57600 and even more 115200 is somewhat problematic. See the section "57600bps"
 
 ### The Problem

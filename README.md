@@ -38,14 +38,13 @@ serial bitrates. See [WormFood calculator](http://wormfood.net/avrbaudcalc.php) 
 
 ```
 38400   +0.2%   This is an excellent choise when running at 8Mhz
-57600   +2.1%   The proMinis(3.3V 8Mhz) are capable of this serial speed
-115200  -3.5%   This is the reason ProMini@8Mhz cannot do 115.2k
+57600   +2.1%   Atmega328@8MHz (and proMini@8Mhz 3.3V) is capable of this serial speed
+115200  -3.5%   Atmega328@8MHz (and ProMini@8Mhz) cannot run the HW serial port at 115.2k
 ```
 If we use the internal oscillator, this error can be added or subtracted to the RC oscillator error.
 
 ### Serial bootloader: Even more problems, and a solution.
-The use of a serial/UART bootloader (a standard, not the one provided here) and at the same time using the internal RC
-oscillator, potentially generates a serious problem. Suppose we know that the optimal
+The use of a serial/UART bootloader (a standard, not the one provided here) and at the same time using the internal RC oscillator, potentially generates a serious problem. Suppose we know that the optimal
 OSCCAL value for a specific atmega chip is 139 : We develop an Arduino application,
 and right after setup() we write:
 
@@ -110,8 +109,7 @@ provide. Anything more accurate than 1% should be done with external crystal/res
 - If you need the speed (up to 20Mhz).<br/>
 - When the trouble to calibrate the RC oscillator outweighs
 the trouble to install the crystal.<br/>
-I believe using the "osccal" utility, it is much easier (or at least, this is my intention) to have a calibrated
-atmega with a perfectly working bootloader, than to install the crystal. "osccal -b" is all that is needed.
+I believe using the "osccal" utility, it is much easier (or at least, this is my intention) to have a calibrated atmega with a perfectly working bootloader, than to install the crystal. "osccal -b" is all that is needed.
 
 ### Reasons to use the internal oscillator
 
